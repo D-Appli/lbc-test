@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "fr.leboncoin.androidrecruitmenttestapp"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "fr.leboncoin.androidrecruitmenttestapp"
