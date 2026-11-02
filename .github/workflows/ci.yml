@@ -26,14 +26,16 @@ jobs:
           distribution: temurin
           java-version: 17
 
+      # Caches the Gradle wrapper, dependencies and the local build cache.
+      # The cache is written only from the default branch; PRs restore it read-only.
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: ${{ github.ref != 'refs/heads/main' }}
 
-      - name: Build
-        run: ./gradlew assembleDebug --stacktrace
-
-      - name: Unit tests
-        run: ./gradlew testDebugUnitTest --stacktrace
+      # A single invocation avoids configuring the project twice.
+      - name: Build & unit tests
+        run: ./gradlew assembleDebug testDebugUnitTest --stacktrace
 
       - name: Upload test reports
         if: always()
