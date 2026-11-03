@@ -1,5 +1,9 @@
 # CLAUDE.md
 
+## Skills
+For all Android/Kotlin work, read `.claude/skills/compose-kotlin-agent-skills/SKILL.md` first.
+Load the matching reference file from `references/` for the specific topic.
+
 ## Commit convention
 
 Commit messages follow the [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/#specification) specification.
