@@ -3,8 +3,8 @@ package fr.leboncoin.androidrecruitmenttestapp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import fr.leboncoin.core.data.network.model.AlbumDto
-import fr.leboncoin.core.data.repository.AlbumRepository
+import fr.leboncoin.core.domain.model.Album
+import fr.leboncoin.core.domain.repository.AlbumRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -30,7 +30,7 @@ class AlbumsViewModel @Inject constructor(
      * stops, so a configuration change does not trigger a new request.
      */
     @OptIn(ExperimentalCoroutinesApi::class)
-    val albums: StateFlow<List<AlbumDto>> = refreshTrigger
+    val albums: StateFlow<List<Album>> = refreshTrigger
         .onStart { emit(Unit) }
         .flatMapLatest {
             flow { emit(repository.getAllAlbums()) }
