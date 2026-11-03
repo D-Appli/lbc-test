@@ -27,7 +27,12 @@ android {
         // Robolectric needs the Android resources to create the in-memory database.
         unitTests.isIncludeAndroidResources = true
         // On Android SDK 36+, Robolectric reaches the JDK's internal SharedSecrets through reflection.
-        unitTests.all { it.jvmArgs("--add-exports=java.base/jdk.internal.access=ALL-UNNAMED") }
+        unitTests.all {
+            it.jvmArgs(
+                "--add-exports=java.base/jdk.internal.access=ALL-UNNAMED",
+                "--add-opens=java.base/java.io=ALL-UNNAMED",
+            )
+        }
     }
 }
 
