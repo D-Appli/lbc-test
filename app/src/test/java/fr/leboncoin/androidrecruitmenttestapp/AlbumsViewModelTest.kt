@@ -2,9 +2,9 @@ package fr.leboncoin.androidrecruitmenttestapp
 
 import fr.leboncoin.core.domain.model.Album
 import fr.leboncoin.core.domain.repository.AlbumRepository
-import io.mockk.coEvery
-import io.mockk.coVerify
-import io.mockk.mockk
+import fr.leboncoin.core.domain.usecase.ObserveAlbumsUseCase
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
@@ -18,62 +18,82 @@ class AlbumsViewModelTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
-    private val albums = listOf(
-        Album(id = 1, albumId = 1, title = "t", url = "u", thumbnailUrl = "tu")
-    )
+    private val cached = listOf(album(1))
+    private val remote = listOf(album(1), album(2))
 
     @Test
-    fun albums_notLoadedUntilCollected() = runTest {
-        val repository = mockk<AlbumRepository> {
-            coEvery { getAllAlbums() } returns albums
-        }
+    fun albums_notRefreshedUntilCollected() = runTest {
+        val repository = FakeAlbumRepository(cached) { remote }
 
-        AlbumsViewModel(repository)
+        AlbumsViewModel(ObserveAlbumsUseCase(repository))
 
-        coVerify(exactly = 0) { repository.getAllAlbums() }
+        assertEquals(0, repository.refreshCount)
     }
 
     @Test
-    fun albums_whenCollected_loadsAlbums() = runTest {
-        val repository = mockk<AlbumRepository> {
-            coEvery { getAllAlbums() } returns albums
-        }
-        val vm = AlbumsViewModel(repository)
+    fun albums_whenCollected_showsRefreshedAlbums() = runTest {
+        val repository = FakeAlbumRepository(cached) { remote }
+        val vm = AlbumsViewModel(ObserveAlbumsUseCase(repository))
 
         collect(vm)
 
-        assertEquals(albums, vm.albums.value)
-        coVerify(exactly = 1) { repository.getAllAlbums() }
+        assertEquals(remote, vm.albums.value)
+        assertEquals(1, repository.refreshCount)
     }
 
     @Test
-    fun albums_whenRepositoryFails_keepsEmptyListWithoutCrashing() = runTest {
-        val repository = mockk<AlbumRepository> {
-            coEvery { getAllAlbums() } throws IOException("network down")
-        }
-        val vm = AlbumsViewModel(repository)
+    fun albums_whenRefreshFails_showsCachedAlbums() = runTest {
+        val repository = FakeAlbumRepository(cached) { throw IOException("network down") }
+        val vm = AlbumsViewModel(ObserveAlbumsUseCase(repository))
 
         collect(vm)
 
-        assertEquals(emptyList<Album>(), vm.albums.value)
+        assertEquals(cached, vm.albums.value)
     }
 
     @Test
-    fun refresh_afterFailure_reloadsAlbums() = runTest {
-        val repository = mockk<AlbumRepository> {
-            coEvery { getAllAlbums() } throws IOException("network down") andThen albums
+    fun refresh_afterFailure_showsRefreshedAlbums() = runTest {
+        var online = false
+        val repository = FakeAlbumRepository(cached) {
+            if (online) remote else throw IOException("network down")
         }
-        val vm = AlbumsViewModel(repository)
+        val vm = AlbumsViewModel(ObserveAlbumsUseCase(repository))
         collect(vm)
 
+        online = true
         vm.refresh()
 
-        assertEquals(albums, vm.albums.value)
-        coVerify(exactly = 2) { repository.getAllAlbums() }
+        assertEquals(remote, vm.albums.value)
+        assertEquals(2, repository.refreshCount)
     }
 
     /** `WhileSubscribed` only loads while someone collects, like the screen does. */
     private fun TestScope.collect(vm: AlbumsViewModel) {
         backgroundScope.launch(mainDispatcherRule.testDispatcher) { vm.albums.collect {} }
     }
+
+    private class FakeAlbumRepository(
+        cached: List<Album>,
+        private val fetchRemote: () -> List<Album>,
+    ) : AlbumRepository {
+
+        private val cache = MutableStateFlow(cached)
+        var refreshCount = 0
+            private set
+
+        override fun observeAlbums(): Flow<List<Album>> = cache
+
+        override suspend fun refreshAlbums() {
+            refreshCount++
+            cache.value = fetchRemote()
+        }
+    }
+
+    private fun album(id: Int) = Album(
+        id = id,
+        albumId = 1,
+        title = "title $id",
+        url = "url $id",
+        thumbnailUrl = "thumbnail $id",
+    )
 }
