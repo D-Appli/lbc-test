@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Android RecruitmentTest App</string>
+    <string name="navigation_albums">Albums</string>
+    <string name="navigation_favorites">Favorites</string>
 </resources>

@@ -42,6 +42,8 @@ dependencies {
     implementation(project(":core:data"))
     implementation(project(":feature:albums:presentation"))
     implementation(project(":feature:albums:ui"))
+    implementation(project(":feature:favorites:presentation"))
+    implementation(project(":feature:favorites:ui"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
