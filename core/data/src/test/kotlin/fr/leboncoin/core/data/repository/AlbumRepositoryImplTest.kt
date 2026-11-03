@@ -43,6 +43,34 @@ class AlbumRepositoryImplTest {
         coVerify(exactly = 1) { albumDao.replaceAllIfChanged(listOf(entity)) }
     }
 
+    @Test
+    fun refreshAlbums_withIdenticalDuplicates_writesOneAlbum() = runTest {
+        coEvery { apiService.getAlbums() } returns listOf(dto, dto)
+        coEvery { albumDao.replaceAllIfChanged(any()) } returns true
+
+        repository.refreshAlbums()
+
+        coVerify(exactly = 1) { albumDao.replaceAllIfChanged(listOf(entity)) }
+    }
+
+    @Test
+    fun refreshAlbums_withConflictingDuplicates_keepsTheFirstOne() = runTest {
+        val other = AlbumDto(id = 2, albumId = 2, title = "o", url = "ou", thumbnailUrl = "otu")
+        coEvery { apiService.getAlbums() } returns listOf(dto, other, dto.copy(title = "wrong"))
+        coEvery { albumDao.replaceAllIfChanged(any()) } returns true
+
+        repository.refreshAlbums()
+
+        coVerify(exactly = 1) {
+            albumDao.replaceAllIfChanged(
+                listOf(
+                    entity,
+                    AlbumEntity(id = 2, albumId = 2, title = "o", url = "ou", thumbnailUrl = "otu"),
+                )
+            )
+        }
+    }
+
     @Test(expected = IOException::class)
     fun refreshAlbums_whenApiFails_throwsAndKeepsTheCache() = runTest {
         coEvery { apiService.getAlbums() } throws IOException("network down")

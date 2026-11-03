@@ -3,6 +3,7 @@ package fr.leboncoin.core.data.repository
 import fr.leboncoin.core.data.mapper.toDomain
 import fr.leboncoin.core.data.mapper.toEntity
 import fr.leboncoin.core.data.network.api.AlbumApiService
+import fr.leboncoin.core.data.network.model.AlbumDto
 import fr.leboncoin.core.database.dao.AlbumDao
 import fr.leboncoin.core.domain.model.Album
 import fr.leboncoin.core.domain.repository.AlbumRepository
@@ -24,7 +25,23 @@ internal class AlbumRepositoryImpl @Inject constructor(
             .map { albums -> albums.map { it.toDomain() } }
 
     override suspend fun refreshAlbums() {
-        val albums = albumApiService.getAlbums().map { it.toEntity() }
+        val albums = albumApiService.getAlbums().distinctById().map { it.toEntity() }
         albumDao.replaceAllIfChanged(albums)
+    }
+
+    /**
+     * Ids are unique, but the backend may send one twice by mistake. Keeps the first
+     * occurrence, so the result does not depend on anything but the response order, and
+     * reports the ids whose duplicates have a different content.
+     */
+    private fun List<AlbumDto>.distinctById(): List<AlbumDto> {
+        val conflictingIds = groupBy { it.id }
+            .filterValues { duplicates -> duplicates.distinct().size > 1 }
+            .keys
+        if (conflictingIds.isNotEmpty()) {
+            // TODO: Track the anomaly (e.g. a non-fatal report) so the backend can fix it.
+            println("AlbumRepository: conflicting albums for ids $conflictingIds, keeping the first ones")
+        }
+        return distinctBy { it.id }
     }
 }

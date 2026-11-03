@@ -18,7 +18,7 @@ abstract class AlbumDao {
     @Query("SELECT * FROM albums ORDER BY id")
     protected abstract suspend fun getAll(): List<AlbumEntity>
 
-    // REPLACE keeps the last album if the API sends the same id twice.
+    // Ids are deduplicated by the caller; REPLACE is only a safety net.
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     protected abstract suspend fun insertAll(albums: List<AlbumEntity>)
 
@@ -28,12 +28,13 @@ abstract class AlbumDao {
     /**
      * Replaces the cached albums with [albums], only if they differ from the cache, so an
      * unchanged response does not write to the database or re-emit [observeAll].
+     * [albums] must have unique ids.
      *
      * @return true if the cache was updated.
      */
     @Transaction
     open suspend fun replaceAllIfChanged(albums: List<AlbumEntity>): Boolean {
-        val newAlbums = albums.associateBy { it.id }.values.sortedBy { it.id }
+        val newAlbums = albums.sortedBy { it.id }
         if (getAll() == newAlbums) return false
         deleteAll()
         insertAll(newAlbums)

@@ -62,13 +62,6 @@ class AlbumDaoTest {
         assertEquals(listOf(album(2, title = "new"), album(3)), dao.observeAll().first())
     }
 
-    @Test
-    fun replaceAllIfChanged_withDuplicateIds_keepsTheLastOne() = runTest {
-        dao.replaceAllIfChanged(listOf(album(1, title = "first"), album(1, title = "last")))
-
-        assertEquals(listOf(album(1, title = "last")), dao.observeAll().first())
-    }
-
     private fun album(id: Int, title: String = "title $id") = AlbumEntity(
         id = id,
         albumId = 1,
