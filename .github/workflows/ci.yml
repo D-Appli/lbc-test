@@ -34,8 +34,9 @@ jobs:
           cache-read-only: ${{ github.ref != 'refs/heads/main' }}
 
       # A single invocation avoids configuring the project twice.
+      # core:domain is a pure Kotlin module: its tests run with `test`, not `testDebugUnitTest`.
       - name: Build & unit tests
-        run: ./gradlew assembleDebug testDebugUnitTest --stacktrace
+        run: ./gradlew assembleDebug testDebugUnitTest :core:domain:test --stacktrace
 
       - name: Upload test reports
         if: always()
