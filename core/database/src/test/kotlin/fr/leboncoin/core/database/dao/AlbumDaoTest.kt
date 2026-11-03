@@ -4,7 +4,6 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import fr.leboncoin.core.database.AppDatabase
 import fr.leboncoin.core.database.entity.AlbumEntity
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -36,15 +35,15 @@ class AlbumDaoTest {
     }
 
     @Test
-    fun replaceAllIfChanged_onEmptyCache_insertsAlbums() = runTest {
+    fun `replaceAllIfChanged inserts the albums into an empty cache`() = runTest {
         val changed = dao.replaceAllIfChanged(listOf(album(2), album(1)))
 
         assertTrue(changed)
-        assertEquals(listOf(album(1), album(2)), dao.observeAll().first())
+        assertEquals(listOf(album(1), album(2)), dao.getAll())
     }
 
     @Test
-    fun replaceAllIfChanged_withSameAlbums_doesNotUpdate() = runTest {
+    fun `replaceAllIfChanged does not update the cache with the same albums`() = runTest {
         dao.replaceAllIfChanged(listOf(album(1), album(2)))
 
         val changed = dao.replaceAllIfChanged(listOf(album(2), album(1)))
@@ -53,13 +52,13 @@ class AlbumDaoTest {
     }
 
     @Test
-    fun replaceAllIfChanged_withDifferentAlbums_replacesCache() = runTest {
+    fun `replaceAllIfChanged replaces the cache with different albums`() = runTest {
         dao.replaceAllIfChanged(listOf(album(1), album(2)))
 
         val changed = dao.replaceAllIfChanged(listOf(album(2, title = "new"), album(3)))
 
         assertTrue(changed)
-        assertEquals(listOf(album(2, title = "new"), album(3)), dao.observeAll().first())
+        assertEquals(listOf(album(2, title = "new"), album(3)), dao.getAll())
     }
 
     private fun album(id: Int, title: String = "title $id") = AlbumEntity(

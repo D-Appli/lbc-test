@@ -19,6 +19,7 @@ kotlin {
 
 dependencies {
     api(libs.kotlinx.coroutines.core)
+    api(libs.paging.common)
     implementation(libs.javax.inject)
 
     testImplementation(libs.junit)

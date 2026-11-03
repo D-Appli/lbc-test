@@ -48,8 +48,11 @@ dependencies {
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
+    // Pull to refresh, which Spark does not provide; the version comes from the Compose BOM.
+    implementation(libs.androidx.material3)
     implementation(platform(libs.spark.bom))
     implementation(libs.spark)
+    implementation(libs.paging.compose)
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
 
@@ -60,6 +63,7 @@ dependencies {
     testImplementation(libs.turbine)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk)
+    testImplementation(libs.paging.testing)
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

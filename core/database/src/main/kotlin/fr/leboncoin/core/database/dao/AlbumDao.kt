@@ -1,22 +1,25 @@
 package fr.leboncoin.core.database.dao
 
+import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import fr.leboncoin.core.database.entity.AlbumEntity
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 abstract class AlbumDao {
 
-    /** Emits the cached albums, then again each time the table changes. */
+    /**
+     * Loads the cached albums page by page. Room invalidates the source each time the table
+     * changes, so the pages are reloaded with the new albums.
+     */
     @Query("SELECT * FROM albums ORDER BY id")
-    abstract fun observeAll(): Flow<List<AlbumEntity>>
+    abstract fun pagingSource(): PagingSource<Int, AlbumEntity>
 
     @Query("SELECT * FROM albums ORDER BY id")
-    protected abstract suspend fun getAll(): List<AlbumEntity>
+    abstract suspend fun getAll(): List<AlbumEntity>
 
     // Ids are deduplicated by the caller; REPLACE is only a safety net.
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -27,7 +30,7 @@ abstract class AlbumDao {
 
     /**
      * Replaces the cached albums with [albums], only if they differ from the cache, so an
-     * unchanged response does not write to the database or re-emit [observeAll].
+     * unchanged response does not write to the database or invalidate [pagingSource].
      * [albums] must have unique ids.
      *
      * @return true if the cache was updated.

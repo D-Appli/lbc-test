@@ -21,6 +21,8 @@ coroutines = "1.11.0"
 mockk = "1.14.11"
 hilt = "2.60.1"
 room = "2.8.5"
+# 3.4+ needs Compose 1.10, above the Compose BOM pinned for Spark 1.4.
+paging = "3.3.6"
 robolectric = "4.17"
 javaxInject = "1"
 androidxTestCore = "1.7.0"
@@ -69,6 +71,12 @@ hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", v
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+room-paging = { group = "androidx.room", name = "room-paging", version.ref = "room" }
+
+# Paging
+paging-common = { group = "androidx.paging", name = "paging-common", version.ref = "paging" }
+paging-compose = { group = "androidx.paging", name = "paging-compose", version.ref = "paging" }
+paging-testing = { group = "androidx.paging", name = "paging-testing", version.ref = "paging" }
 
 # Coroutines
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }

@@ -1,5 +1,9 @@
 package fr.leboncoin.core.data.repository
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.map
 import fr.leboncoin.core.data.mapper.toDomain
 import fr.leboncoin.core.data.mapper.toEntity
 import fr.leboncoin.core.data.network.api.AlbumApiService
@@ -8,7 +12,6 @@ import fr.leboncoin.core.database.dao.AlbumDao
 import fr.leboncoin.core.domain.model.Album
 import fr.leboncoin.core.domain.repository.AlbumRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
@@ -18,13 +21,13 @@ internal class AlbumRepositoryImpl @Inject constructor(
     private val albumDao: AlbumDao,
 ) : AlbumRepository {
 
-    override fun observeAlbums(): Flow<List<Album>> =
-        albumDao.observeAll()
-            // Room re-emits on any write to the table, even with the same rows.
-            .distinctUntilChanged()
-            .map { albums -> albums.map { it.toDomain() } }
+    override fun getPagedAlbums(): Flow<PagingData<Album>> =
+        Pager(
+            config = PagingConfig(pageSize = PAGE_SIZE, enablePlaceholders = false),
+            pagingSourceFactory = albumDao::pagingSource,
+        ).flow.map { albums -> albums.map { it.toDomain() } }
 
-    override suspend fun refreshAlbums() {
+    override suspend fun loadAlbums() {
         val albums = albumApiService.getAlbums().distinctById().map { it.toEntity() }
         albumDao.replaceAllIfChanged(albums)
     }
@@ -43,5 +46,10 @@ internal class AlbumRepositoryImpl @Inject constructor(
             println("AlbumRepository: conflicting albums for ids $conflictingIds, keeping the first ones")
         }
         return distinctBy { it.id }
+    }
+
+    private companion object {
+        // The API sends all the albums at once; only the cache is read page by page.
+        const val PAGE_SIZE = 20
     }
 }

@@ -1,5 +1,7 @@
 package fr.leboncoin.core.data.repository
 
+import androidx.paging.testing.asPagingSourceFactory
+import androidx.paging.testing.asSnapshot
 import fr.leboncoin.core.data.network.api.AlbumApiService
 import fr.leboncoin.core.data.network.model.AlbumDto
 import fr.leboncoin.core.database.dao.AlbumDao
@@ -9,8 +11,6 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -27,39 +27,40 @@ class AlbumRepositoryImplTest {
     private val repository = AlbumRepositoryImpl(apiService, albumDao)
 
     @Test
-    fun observeAlbums_mapsEntitiesToDomainModels() = runTest {
-        every { albumDao.observeAll() } returns flowOf(listOf(entity))
+    fun `getPagedAlbums maps the cached entities to albums`() = runTest {
+        val pagingSourceFactory = listOf(entity).asPagingSourceFactory()
+        every { albumDao.pagingSource() } answers { pagingSourceFactory() }
 
-        assertEquals(listOf(album), repository.observeAlbums().first())
+        assertEquals(listOf(album), repository.getPagedAlbums().asSnapshot())
     }
 
     @Test
-    fun refreshAlbums_writesRemoteAlbumsToTheCache() = runTest {
+    fun `loadAlbums writes the network albums to the cache`() = runTest {
         coEvery { apiService.getAlbums() } returns listOf(dto)
         coEvery { albumDao.replaceAllIfChanged(any()) } returns true
 
-        repository.refreshAlbums()
+        repository.loadAlbums()
 
         coVerify(exactly = 1) { albumDao.replaceAllIfChanged(listOf(entity)) }
     }
 
     @Test
-    fun refreshAlbums_withIdenticalDuplicates_writesOneAlbum() = runTest {
+    fun `loadAlbums writes identical duplicates once`() = runTest {
         coEvery { apiService.getAlbums() } returns listOf(dto, dto)
         coEvery { albumDao.replaceAllIfChanged(any()) } returns true
 
-        repository.refreshAlbums()
+        repository.loadAlbums()
 
         coVerify(exactly = 1) { albumDao.replaceAllIfChanged(listOf(entity)) }
     }
 
     @Test
-    fun refreshAlbums_withConflictingDuplicates_keepsTheFirstOne() = runTest {
+    fun `loadAlbums keeps the first of conflicting duplicates`() = runTest {
         val other = AlbumDto(id = 2, albumId = 2, title = "o", url = "ou", thumbnailUrl = "otu")
         coEvery { apiService.getAlbums() } returns listOf(dto, other, dto.copy(title = "wrong"))
         coEvery { albumDao.replaceAllIfChanged(any()) } returns true
 
-        repository.refreshAlbums()
+        repository.loadAlbums()
 
         coVerify(exactly = 1) {
             albumDao.replaceAllIfChanged(
@@ -72,11 +73,11 @@ class AlbumRepositoryImplTest {
     }
 
     @Test(expected = IOException::class)
-    fun refreshAlbums_whenApiFails_throwsAndKeepsTheCache() = runTest {
+    fun `loadAlbums throws and keeps the cache when the network fails`() = runTest {
         coEvery { apiService.getAlbums() } throws IOException("network down")
 
         try {
-            repository.refreshAlbums()
+            repository.loadAlbums()
         } finally {
             coVerify(exactly = 0) { albumDao.replaceAllIfChanged(any()) }
         }
