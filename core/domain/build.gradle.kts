@@ -16,3 +16,13 @@ kotlin {
         jvmTarget.set(JvmTarget.JVM_11)
     }
 }
+
+dependencies {
+    api(libs.kotlinx.coroutines.core)
+    api(libs.paging.common)
+    implementation(libs.javax.inject)
+
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.turbine)
+}

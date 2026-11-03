@@ -30,6 +30,7 @@ android {
 
 dependencies {
     implementation(project(":core:domain"))
+    implementation(project(":core:database"))
 
     implementation(libs.retrofit.core)
     implementation(libs.retrofit.kotlin.serialization)
@@ -37,10 +38,13 @@ dependencies {
 
     implementation(libs.kotlin.serialization.json)
 
+    implementation(libs.paging.common)
+
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk)
+    testImplementation(libs.paging.testing)
 }

@@ -20,6 +20,12 @@ turbine = "1.2.1"
 coroutines = "1.11.0"
 mockk = "1.14.11"
 hilt = "2.60.1"
+room = "2.8.5"
+# 3.4+ needs Compose 1.10, above the Compose BOM pinned for Spark 1.4.
+paging = "3.3.6"
+robolectric = "4.17"
+javaxInject = "1"
+androidxTestCore = "1.7.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -61,10 +67,29 @@ leakcanary-android = { group = "com.squareup.leakcanary", name = "leakcanary-and
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
 
+# Room
+room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+room-paging = { group = "androidx.room", name = "room-paging", version.ref = "room" }
+
+# Paging
+paging-common = { group = "androidx.paging", name = "paging-common", version.ref = "paging" }
+paging-compose = { group = "androidx.paging", name = "paging-compose", version.ref = "paging" }
+paging-testing = { group = "androidx.paging", name = "paging-testing", version.ref = "paging" }
+
+# Coroutines
+kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
+
+# javax.inject, for @Inject in pure Kotlin modules
+javax-inject = { group = "javax.inject", name = "javax.inject", version.ref = "javaxInject" }
+
 # Testing
 turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines" }
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
+robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
+androidx-test-core = { group = "androidx.test", name = "core-ktx", version.ref = "androidxTestCore" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -73,3 +98,4 @@ kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "ko
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+room = { id = "androidx.room", version.ref = "room" }

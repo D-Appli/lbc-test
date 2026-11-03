@@ -1,14 +1,23 @@
 package fr.leboncoin.androidrecruitmenttestapp
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.testing.asPagingSourceFactory
+import androidx.paging.testing.asSnapshot
 import fr.leboncoin.core.domain.model.Album
 import fr.leboncoin.core.domain.repository.AlbumRepository
-import io.mockk.coEvery
-import io.mockk.coVerify
-import io.mockk.mockk
-import kotlinx.coroutines.launch
+import fr.leboncoin.core.domain.usecase.GetPagedAlbumsUseCase
+import fr.leboncoin.core.domain.usecase.LoadAlbumsUseCase
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import java.io.IOException
@@ -18,62 +27,154 @@ class AlbumsViewModelTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
-    private val albums = listOf(
-        Album(id = 1, albumId = 1, title = "t", url = "u", thumbnailUrl = "tu")
-    )
+    private val cached = listOf(album(1))
+    private val remote = listOf(album(1), album(2))
 
     @Test
-    fun albums_notLoadedUntilCollected() = runTest {
-        val repository = mockk<AlbumRepository> {
-            coEvery { getAllAlbums() } returns albums
-        }
+    fun `albums are not loaded from the network until collected`() = runTest {
+        val repository = fakeRepository(cached) { remote }
 
-        AlbumsViewModel(repository)
+        viewModel(repository)
 
-        coVerify(exactly = 0) { repository.getAllAlbums() }
+        assertEquals(0, repository.loadCount)
     }
 
     @Test
-    fun albums_whenCollected_loadsAlbums() = runTest {
-        val repository = mockk<AlbumRepository> {
-            coEvery { getAllAlbums() } returns albums
-        }
-        val vm = AlbumsViewModel(repository)
+    fun `albums show the network albums once loaded`() = runTest {
+        val repository = fakeRepository(cached) { remote }
+        val vm = viewModel(repository)
 
-        collect(vm)
-
-        assertEquals(albums, vm.albums.value)
-        coVerify(exactly = 1) { repository.getAllAlbums() }
+        assertEquals(remote, vm.albums.asSnapshot())
+        assertEquals(1, repository.loadCount)
     }
 
     @Test
-    fun albums_whenRepositoryFails_keepsEmptyListWithoutCrashing() = runTest {
-        val repository = mockk<AlbumRepository> {
-            coEvery { getAllAlbums() } throws IOException("network down")
-        }
-        val vm = AlbumsViewModel(repository)
+    fun `albums keep the cached albums when loading fails`() = runTest {
+        val repository = fakeRepository(cached) { throw IOException("network down") }
+        val vm = viewModel(repository)
 
-        collect(vm)
-
-        assertEquals(emptyList<Album>(), vm.albums.value)
+        assertEquals(cached, vm.albums.asSnapshot())
     }
 
     @Test
-    fun refresh_afterFailure_reloadsAlbums() = runTest {
-        val repository = mockk<AlbumRepository> {
-            coEvery { getAllAlbums() } throws IOException("network down") andThen albums
+    fun `albums load the first pages only`() = runTest {
+        val many = (1..200).map(::album)
+        val vm = viewModel(fakeRepository(many) { many })
+
+        val loaded = vm.albums.asSnapshot()
+
+        assertTrue("loaded ${loaded.size} albums", loaded.size < many.size)
+        assertEquals(many.take(loaded.size), loaded)
+    }
+
+    @Test
+    fun `albums load the next pages while scrolling`() = runTest {
+        val many = (1..200).map(::album)
+        val vm = viewModel(fakeRepository(many) { many })
+        val firstPages = vm.albums.asSnapshot()
+
+        val loaded = vm.albums.asSnapshot { scrollTo(index = firstPages.size + 30) }
+
+        assertTrue("loaded ${loaded.size} albums", loaded.size > firstPages.size + 30)
+        assertEquals(many.take(loaded.size), loaded)
+    }
+
+    @Test
+    fun `refresh after a failure shows the network albums`() = runTest {
+        var online = false
+        val repository = fakeRepository(cached) {
+            if (online) remote else throw IOException("network down")
         }
-        val vm = AlbumsViewModel(repository)
-        collect(vm)
+        val vm = viewModel(repository)
+        assertEquals(cached, vm.albums.asSnapshot())
+
+        online = true
+        vm.refresh()
+
+        assertEquals(remote, vm.albums.asSnapshot())
+        assertEquals(2, repository.loadCount)
+    }
+
+    @Test
+    fun `refresh is ignored while a load is in progress`() = runTest {
+        val loaded = CompletableDeferred<Unit>()
+        val repository = fakeRepository(cached) { loaded.await(); remote }
+        val vm = viewModel(repository)
+
+        vm.refresh()
+        vm.refresh()
+        loaded.complete(Unit)
+
+        assertEquals(1, repository.loadCount)
+    }
+
+    @Test
+    fun `isLoading is false before any load`() = runTest {
+        val vm = viewModel(fakeRepository(cached) { remote })
+
+        assertFalse(vm.isLoading.value)
+    }
+
+    @Test
+    fun `isLoading is true while the albums load, then false`() = runTest {
+        val loaded = CompletableDeferred<Unit>()
+        val vm = viewModel(fakeRepository(cached) { loaded.await(); remote })
+
+        vm.refresh()
+        assertTrue(vm.isLoading.value)
+
+        loaded.complete(Unit)
+        assertFalse(vm.isLoading.value)
+    }
+
+    @Test
+    fun `isLoading is false after a failed load`() = runTest {
+        val vm = viewModel(fakeRepository(cached) { throw IOException("network down") })
 
         vm.refresh()
 
-        assertEquals(albums, vm.albums.value)
-        coVerify(exactly = 2) { repository.getAllAlbums() }
+        assertFalse(vm.isLoading.value)
     }
 
-    /** `WhileSubscribed` only loads while someone collects, like the screen does. */
-    private fun TestScope.collect(vm: AlbumsViewModel) {
-        backgroundScope.launch(mainDispatcherRule.testDispatcher) { vm.albums.collect {} }
+    private fun viewModel(repository: AlbumRepository) = AlbumsViewModel(
+        getPagedAlbums = GetPagedAlbumsUseCase(repository),
+        loadAlbums = LoadAlbumsUseCase(repository),
+    )
+
+    private fun TestScope.fakeRepository(
+        cached: List<Album>,
+        fetchRemote: suspend () -> List<Album>,
+    ) = FakeAlbumRepository(backgroundScope, cached, fetchRemote)
+
+    /** Pages through the cache like Room: a new list invalidates the paging source. */
+    private class FakeAlbumRepository(
+        scope: CoroutineScope,
+        cached: List<Album>,
+        private val fetchRemote: suspend () -> List<Album>,
+    ) : AlbumRepository {
+
+        private val cache = MutableStateFlow(cached)
+        private val pagingSourceFactory = cache.asPagingSourceFactory(scope)
+        var loadCount = 0
+            private set
+
+        override fun getPagedAlbums(): Flow<PagingData<Album>> =
+            Pager(
+                config = PagingConfig(pageSize = 20, enablePlaceholders = false),
+                pagingSourceFactory = pagingSourceFactory,
+            ).flow
+
+        override suspend fun loadAlbums() {
+            loadCount++
+            cache.value = fetchRemote()
+        }
     }
+
+    private fun album(id: Int) = Album(
+        id = id,
+        albumId = 1,
+        title = "title $id",
+        url = "url $id",
+        thumbnailUrl = "thumbnail $id",
+    )
 }

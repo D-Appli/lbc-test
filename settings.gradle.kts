@@ -23,3 +23,4 @@ rootProject.name = "Android RecruitmentTest App"
 include(":app")
 include(":core:domain")
 include(":core:data")
+include(":core:database")
