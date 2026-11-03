@@ -4,6 +4,15 @@
 For all Android/Kotlin work, read `.claude/skills/compose-kotlin-agent-skills/SKILL.md` first.
 Load the matching reference file from `references/` for the specific topic.
 
+The skills are a Git submodule, which a plain `git clone` does not fetch.
+If `.claude/skills/compose-kotlin-agent-skills/` is empty, initialize it:
+
+```
+git clone --recurse-submodules https://github.com/D-Appli/lbc-test.git
+# or, for an existing clone:
+git submodule update --init --recursive
+```
+
 ## Commit convention
 
 Commit messages follow the [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/#specification) specification.
