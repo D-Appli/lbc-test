@@ -1,8 +1,8 @@
 package fr.leboncoin.androidrecruitmenttestapp
 
-import fr.leboncoin.data.network.api.AlbumApiService
-import fr.leboncoin.data.network.model.AlbumDto
-import fr.leboncoin.data.repository.AlbumRepository
+import fr.leboncoin.core.data.network.api.AlbumApiService
+import fr.leboncoin.core.data.network.model.AlbumDto
+import fr.leboncoin.core.data.repository.AlbumRepository
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk

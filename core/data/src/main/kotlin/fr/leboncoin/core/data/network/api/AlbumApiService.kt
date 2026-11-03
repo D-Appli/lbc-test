@@ -1,6 +1,6 @@
-package fr.leboncoin.data.network.api
+package fr.leboncoin.core.data.network.api
 
-import fr.leboncoin.data.network.model.AlbumDto
+import fr.leboncoin.core.data.network.model.AlbumDto
 import retrofit2.http.GET
 
 interface AlbumApiService {

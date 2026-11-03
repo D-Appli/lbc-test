@@ -1,4 +1,4 @@
-package fr.leboncoin.data.network.model
+package fr.leboncoin.core.data.network.model
 
 import kotlinx.serialization.Serializable
 

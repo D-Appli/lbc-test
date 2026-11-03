@@ -27,7 +27,7 @@ import com.adevinta.spark.ExperimentalSparkApi
 import com.adevinta.spark.SparkTheme
 import com.adevinta.spark.components.card.Card
 import com.adevinta.spark.components.chips.ChipTinted
-import fr.leboncoin.data.network.model.AlbumDto
+import fr.leboncoin.core.data.network.model.AlbumDto
 
 @OptIn(ExperimentalSparkApi::class)
 @Composable

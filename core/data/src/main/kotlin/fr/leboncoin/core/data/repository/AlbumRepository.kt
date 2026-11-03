@@ -1,6 +1,6 @@
-package fr.leboncoin.data.repository
+package fr.leboncoin.core.data.repository
 
-import fr.leboncoin.data.network.api.AlbumApiService
+import fr.leboncoin.core.data.network.api.AlbumApiService
 import javax.inject.Inject
 
 class AlbumRepository @Inject constructor(
