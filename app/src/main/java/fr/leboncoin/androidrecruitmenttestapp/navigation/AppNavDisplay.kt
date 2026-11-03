@@ -105,7 +105,7 @@ private fun AppNavigationBar(
 }
 
 /** Keeps [AlbumsRoute] at the bottom of the stack, so its state survives tab switches. */
-private fun NavBackStack<NavKey>.selectTopLevelRoute(route: NavKey) {
+internal fun NavBackStack<NavKey>.selectTopLevelRoute(route: NavKey) {
     if (last() == route) return
     while (size > 1) removeLastOrNull()
     if (route != AlbumsRoute) add(route)
