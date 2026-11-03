@@ -1,8 +1,7 @@
 package fr.leboncoin.androidrecruitmenttestapp
 
-import fr.leboncoin.data.network.api.AlbumApiService
-import fr.leboncoin.data.network.model.AlbumDto
-import fr.leboncoin.data.repository.AlbumRepository
+import fr.leboncoin.core.domain.model.Album
+import fr.leboncoin.core.domain.repository.AlbumRepository
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -20,57 +19,57 @@ class AlbumsViewModelTest {
     val mainDispatcherRule = MainDispatcherRule()
 
     private val albums = listOf(
-        AlbumDto(id = 1, albumId = 1, title = "t", url = "u", thumbnailUrl = "tu")
+        Album(id = 1, albumId = 1, title = "t", url = "u", thumbnailUrl = "tu")
     )
 
     @Test
     fun albums_notLoadedUntilCollected() = runTest {
-        val apiService = mockk<AlbumApiService> {
-            coEvery { getAlbums() } returns albums
+        val repository = mockk<AlbumRepository> {
+            coEvery { getAllAlbums() } returns albums
         }
 
-        AlbumsViewModel(AlbumRepository(apiService))
+        AlbumsViewModel(repository)
 
-        coVerify(exactly = 0) { apiService.getAlbums() }
+        coVerify(exactly = 0) { repository.getAllAlbums() }
     }
 
     @Test
     fun albums_whenCollected_loadsAlbums() = runTest {
-        val apiService = mockk<AlbumApiService> {
-            coEvery { getAlbums() } returns albums
+        val repository = mockk<AlbumRepository> {
+            coEvery { getAllAlbums() } returns albums
         }
-        val vm = AlbumsViewModel(AlbumRepository(apiService))
+        val vm = AlbumsViewModel(repository)
 
         collect(vm)
 
         assertEquals(albums, vm.albums.value)
-        coVerify(exactly = 1) { apiService.getAlbums() }
+        coVerify(exactly = 1) { repository.getAllAlbums() }
     }
 
     @Test
-    fun albums_whenApiFails_keepsEmptyListWithoutCrashing() = runTest {
-        val apiService = mockk<AlbumApiService> {
-            coEvery { getAlbums() } throws IOException("network down")
+    fun albums_whenRepositoryFails_keepsEmptyListWithoutCrashing() = runTest {
+        val repository = mockk<AlbumRepository> {
+            coEvery { getAllAlbums() } throws IOException("network down")
         }
-        val vm = AlbumsViewModel(AlbumRepository(apiService))
+        val vm = AlbumsViewModel(repository)
 
         collect(vm)
 
-        assertEquals(emptyList<AlbumDto>(), vm.albums.value)
+        assertEquals(emptyList<Album>(), vm.albums.value)
     }
 
     @Test
     fun refresh_afterFailure_reloadsAlbums() = runTest {
-        val apiService = mockk<AlbumApiService> {
-            coEvery { getAlbums() } throws IOException("network down") andThen albums
+        val repository = mockk<AlbumRepository> {
+            coEvery { getAllAlbums() } throws IOException("network down") andThen albums
         }
-        val vm = AlbumsViewModel(AlbumRepository(apiService))
+        val vm = AlbumsViewModel(repository)
         collect(vm)
 
         vm.refresh()
 
         assertEquals(albums, vm.albums.value)
-        coVerify(exactly = 2) { apiService.getAlbums() }
+        coVerify(exactly = 2) { repository.getAllAlbums() }
     }
 
     /** `WhileSubscribed` only loads while someone collects, like the screen does. */

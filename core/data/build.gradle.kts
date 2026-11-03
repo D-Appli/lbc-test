@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "fr.leboncoin.data"
+    namespace = "fr.leboncoin.core.data"
     compileSdk = 37
 
     defaultConfig {
@@ -29,6 +29,8 @@ android {
 }
 
 dependencies {
+    implementation(project(":core:domain"))
+
     implementation(libs.retrofit.core)
     implementation(libs.retrofit.kotlin.serialization)
     implementation(libs.okhttp.logging)
@@ -37,4 +39,8 @@ dependencies {
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
+
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.mockk)
 }

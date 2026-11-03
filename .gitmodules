@@ -1,0 +1,3 @@
+[submodule ".claude/skills/compose-kotlin-agent-skills"]
+	path = .claude/skills/compose-kotlin-agent-skills
+	url = https://github.com/haidrrrry/compose-kotlin-agent-skills.git

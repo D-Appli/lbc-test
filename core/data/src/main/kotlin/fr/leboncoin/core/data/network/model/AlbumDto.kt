@@ -1,9 +1,9 @@
-package fr.leboncoin.data.network.model
+package fr.leboncoin.core.data.network.model
 
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class AlbumDto(
+internal data class AlbumDto(
     val id: Int,
     val albumId: Int,
     val title: String,
