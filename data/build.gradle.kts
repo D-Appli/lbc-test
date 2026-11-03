@@ -11,8 +11,6 @@ android {
 
     defaultConfig {
         minSdk = 24
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -28,19 +26,15 @@ android {
     buildFeatures {
         buildConfig = true
     }
+}
 
-    dependencies {
-        implementation(libs.retrofit.core)
-        implementation(libs.retrofit.kotlin.serialization)
-        implementation(libs.okhttp.logging)
+dependencies {
+    implementation(libs.retrofit.core)
+    implementation(libs.retrofit.kotlin.serialization)
+    implementation(libs.okhttp.logging)
 
-        implementation(libs.kotlin.serialization.json)
+    implementation(libs.kotlin.serialization.json)
 
-        implementation(libs.hilt.android)
-        ksp(libs.hilt.compiler)
-
-        testImplementation(libs.junit)
-        androidTestImplementation(libs.androidx.junit) // Useless dependency
-        androidTestImplementation(libs.androidx.espresso.core) // Useless dependency
-    }
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
 }
