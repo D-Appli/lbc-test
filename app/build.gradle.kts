@@ -39,6 +39,8 @@ android {
 
 dependencies {
     implementation(project(":data"))
+    implementation(project(":core:kotlin"))
+    implementation(project(":core:presentation"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -51,8 +53,10 @@ dependencies {
     implementation(libs.spark)
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
+    implementation(libs.kotlinx.collections.immutable)
 
     implementation(libs.hilt.android)
+    implementation(libs.androidx.hilt.lifecycle.viewmodel.compose)
     ksp(libs.hilt.compiler)
 
     testImplementation(libs.junit)

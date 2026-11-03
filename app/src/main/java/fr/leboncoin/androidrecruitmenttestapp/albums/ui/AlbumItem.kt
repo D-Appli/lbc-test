@@ -1,6 +1,5 @@
-package fr.leboncoin.androidrecruitmenttestapp.ui
+package fr.leboncoin.androidrecruitmenttestapp.albums.ui
 
-import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,13 +26,13 @@ import com.adevinta.spark.ExperimentalSparkApi
 import com.adevinta.spark.SparkTheme
 import com.adevinta.spark.components.card.Card
 import com.adevinta.spark.components.chips.ChipTinted
-import fr.leboncoin.data.network.model.AlbumDto
+import fr.leboncoin.androidrecruitmenttestapp.albums.presentation.model.AlbumUiModel
 
 @OptIn(ExperimentalSparkApi::class)
 @Composable
 fun AlbumItem(
-    album: AlbumDto,
-    onItemSelected : (AlbumDto) -> Unit,
+    album: AlbumUiModel,
+    onItemSelected: (AlbumUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Card(
