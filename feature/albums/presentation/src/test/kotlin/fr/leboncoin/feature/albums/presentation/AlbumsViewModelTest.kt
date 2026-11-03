@@ -1,4 +1,4 @@
-package fr.leboncoin.androidrecruitmenttestapp
+package fr.leboncoin.feature.albums.presentation
 
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
