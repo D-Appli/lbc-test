@@ -1,4 +1,4 @@
-package fr.leboncoin.androidrecruitmenttestapp.ui
+package fr.leboncoin.feature.albums.ui
 
 import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement

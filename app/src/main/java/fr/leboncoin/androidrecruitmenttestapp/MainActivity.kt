@@ -8,8 +8,9 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import com.adevinta.spark.SparkTheme
 import dagger.hilt.android.AndroidEntryPoint
-import fr.leboncoin.androidrecruitmenttestapp.ui.AlbumsScreen
 import fr.leboncoin.androidrecruitmenttestapp.utils.AnalyticsHelper
+import fr.leboncoin.feature.albums.presentation.AlbumsViewModel
+import fr.leboncoin.feature.albums.ui.AlbumsScreen
 import javax.inject.Inject
 
 @AndroidEntryPoint

@@ -1,4 +1,4 @@
-package fr.leboncoin.androidrecruitmenttestapp.ui
+package fr.leboncoin.feature.albums.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,8 +18,8 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
 import com.adevinta.spark.components.scaffold.Scaffold
-import fr.leboncoin.androidrecruitmenttestapp.AlbumsViewModel
 import fr.leboncoin.core.domain.model.Album
+import fr.leboncoin.feature.albums.presentation.AlbumsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -46,7 +46,7 @@ fun AlbumsScreen(
                     isRefreshing = isLoading,
                     // Below the status bar, as the list is drawn edge to edge.
                     modifier = Modifier
-                        .align(Alignment.Center)
+                        .align(Alignment.TopCenter)
                         .padding(top = contentPadding.calculateTopPadding()),
                 )
             },

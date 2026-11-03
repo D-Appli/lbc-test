@@ -40,6 +40,8 @@ android {
 dependencies {
     implementation(project(":core:domain"))
     implementation(project(":core:data"))
+    implementation(project(":feature:albums:presentation"))
+    implementation(project(":feature:albums:ui"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -48,13 +50,8 @@ dependencies {
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
-    // Pull to refresh, which Spark does not provide; the version comes from the Compose BOM.
-    implementation(libs.androidx.material3)
     implementation(platform(libs.spark.bom))
     implementation(libs.spark)
-    implementation(libs.paging.compose)
-    implementation(libs.coil.compose)
-    implementation(libs.coil.network.okhttp)
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
