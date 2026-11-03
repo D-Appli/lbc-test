@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -30,6 +31,8 @@ dependencies {
     implementation(project(":feature:albums:presentation"))
 
     implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.androidx.hilt.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.navigation3.runtime)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     // Pull to refresh, which Spark does not provide; the version comes from the Compose BOM.
