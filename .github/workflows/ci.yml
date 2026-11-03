@@ -20,11 +20,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
+      # Robolectric needs Java 21 to run the tests on Android SDK 36+.
+      - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 17
+          java-version: 21
 
       # Caches the Gradle wrapper, dependencies and the local build cache.
       # The cache is written only from the default branch; PRs restore it read-only.
