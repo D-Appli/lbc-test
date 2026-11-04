@@ -80,7 +80,7 @@ fun AppNavDisplay(
             ),
             entryProvider = entryProvider {
                 albumsEntry(onItemSelected = onAlbumSelected)
-                favoritesEntry()
+                favoritesEntry(onItemSelected = onAlbumSelected)
             },
         )
     }

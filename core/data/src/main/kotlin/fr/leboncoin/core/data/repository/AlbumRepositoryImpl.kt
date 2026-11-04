@@ -27,6 +27,9 @@ internal class AlbumRepositoryImpl @Inject constructor(
             pagingSourceFactory = albumDao::pagingSource,
         ).flow.map { albums -> albums.map { it.toDomain() } }
 
+    override fun getFavoriteAlbums(): Flow<List<Album>> =
+        albumDao.observeFavorites().map { albums -> albums.map { it.toDomain() } }
+
     override suspend fun loadAlbums() {
         val albums = albumApiService.getAlbums().distinctById().map { it.toEntity() }
         albumDao.replaceAllIfChanged(albums)

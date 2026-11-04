@@ -24,9 +24,19 @@ android {
 }
 
 dependencies {
-    // ViewModel is part of the public API of FavoritesViewModel.
+    implementation(project(":core:domain"))
+
+    // ViewModel and ImmutableList are part of the public API of FavoritesViewModel.
     api(libs.androidx.lifecycle.viewmodel.ktx)
+    api(libs.kotlinx.collections.immutable)
+    // @Immutable on the UI state, which only needs the annotation and not the Compose runtime.
+    implementation(libs.androidx.compose.runtime.annotation)
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
+
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
+    // AlbumRepository exposes PagingData, for the fake of the tests.
+    testImplementation(libs.paging.common)
 }

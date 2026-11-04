@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.emptyFlow
 
 internal class FakeAlbumRepository(
     private val pagedAlbums: Flow<PagingData<Album>> = emptyFlow(),
+    private val favoriteAlbums: Flow<List<Album>> = emptyFlow(),
     private val onLoad: suspend () -> Unit = {},
 ) : AlbumRepository {
 
@@ -17,6 +18,8 @@ internal class FakeAlbumRepository(
     val toggledIds = mutableListOf<Int>()
 
     override fun getPagedAlbums(): Flow<PagingData<Album>> = pagedAlbums
+
+    override fun getFavoriteAlbums(): Flow<List<Album>> = favoriteAlbums
 
     override suspend fun loadAlbums() {
         loadCount++

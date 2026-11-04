@@ -26,10 +26,17 @@ android {
     }
 }
 
+composeCompiler {
+    stabilityConfigurationFiles.add(rootProject.layout.projectDirectory.file("compose_stability.conf"))
+}
+
 dependencies {
+    implementation(project(":core:domain"))
     implementation(project(":feature:favorites:presentation"))
+    implementation(project(":libs:albums:ui"))
 
     implementation(libs.androidx.hilt.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.navigation3.runtime)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)

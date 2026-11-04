@@ -11,6 +11,8 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -40,6 +42,13 @@ class AlbumRepositoryImplTest {
         every { albumDao.pagingSource() } answers { pagingSourceFactory() }
 
         assertEquals(listOf(album.copy(isFavorite = true)), repository.getPagedAlbums().asSnapshot())
+    }
+
+    @Test
+    fun `getFavoriteAlbums maps the cached favorites to albums`() = runTest {
+        every { albumDao.observeFavorites() } returns flowOf(listOf(entity.copy(isFavorite = true)))
+
+        assertEquals(listOf(album.copy(isFavorite = true)), repository.getFavoriteAlbums().first())
     }
 
     @Test

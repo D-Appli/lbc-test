@@ -12,6 +12,9 @@ interface AlbumRepository {
      */
     fun getPagedAlbums(): Flow<PagingData<Album>>
 
+    /** Emits all the favorite albums, then again each time the cache changes. */
+    fun getFavoriteAlbums(): Flow<List<Album>>
+
     /**
      * Fetches the albums from the network and updates the cache if they changed. Favorites
      * are kept, except for the albums that the network no longer returns.

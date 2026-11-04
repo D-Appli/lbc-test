@@ -4,6 +4,10 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import fr.leboncoin.core.database.AppDatabase
 import fr.leboncoin.core.database.entity.AlbumEntity
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -130,6 +134,43 @@ class AlbumDaoTest {
         dao.toggleFavorite(2)
 
         assertEquals(listOf(album(1), album(2, isFavorite = true)), dao.getAll())
+    }
+
+    @Test
+    fun `observeFavorites emits the favorite albums only, ordered by id`() = runTest {
+        dao.replaceAllIfChanged(listOf(album(1), album(2), album(3)))
+        dao.toggleFavorite(3)
+        dao.toggleFavorite(1)
+
+        assertEquals(
+            listOf(album(1, isFavorite = true), album(3, isFavorite = true)),
+            dao.observeFavorites().first(),
+        )
+    }
+
+    @Test
+    fun `observeFavorites emits an empty list without favorites`() = runTest {
+        dao.replaceAllIfChanged(listOf(album(1)))
+
+        assertEquals(emptyList<AlbumEntity>(), dao.observeFavorites().first())
+    }
+
+    @Test
+    fun `observeFavorites emits again when a favorite changes`() = runTest {
+        dao.replaceAllIfChanged(listOf(album(1)))
+        var toggled = false
+
+        val emissions = dao.observeFavorites()
+            .onEach {
+                if (!toggled) {
+                    toggled = true
+                    dao.toggleFavorite(1)
+                }
+            }
+            .take(2)
+            .toList()
+
+        assertEquals(listOf(emptyList(), listOf(album(1, isFavorite = true))), emissions)
     }
 
     private fun album(

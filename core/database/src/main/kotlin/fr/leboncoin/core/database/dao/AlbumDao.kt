@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import fr.leboncoin.core.database.entity.AlbumEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 abstract class AlbumDao {
@@ -17,6 +18,10 @@ abstract class AlbumDao {
      */
     @Query("SELECT * FROM albums ORDER BY id")
     abstract fun pagingSource(): PagingSource<Int, AlbumEntity>
+
+    /** Emits the favorite albums, then again each time the table changes. */
+    @Query("SELECT * FROM albums WHERE isFavorite = 1 ORDER BY id")
+    abstract fun observeFavorites(): Flow<List<AlbumEntity>>
 
     @Query("SELECT * FROM albums ORDER BY id")
     abstract suspend fun getAll(): List<AlbumEntity>

@@ -14,6 +14,7 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -186,6 +187,8 @@ class AlbumsViewModelTest {
                 config = PagingConfig(pageSize = 20, enablePlaceholders = false),
                 pagingSourceFactory = pagingSourceFactory,
             ).flow
+
+        override fun getFavoriteAlbums(): Flow<List<Album>> = emptyFlow()
 
         override suspend fun loadAlbums() {
             loadCount++
