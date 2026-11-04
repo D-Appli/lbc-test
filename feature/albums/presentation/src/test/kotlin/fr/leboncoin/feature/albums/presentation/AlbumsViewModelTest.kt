@@ -159,6 +159,18 @@ class AlbumsViewModelTest {
         assertEquals(remote, vm.albums.asSnapshot())
     }
 
+    @Test
+    fun `onFavoriteClick keeps the albums when toggling fails`() = runTest {
+        val repository = fakeRepository(remote) { remote }
+        val vm = viewModel(repository)
+        vm.albums.asSnapshot()
+        repository.toggleFailure = IOException("database error")
+
+        vm.onFavoriteClick(album(2))
+
+        assertEquals(remote, vm.albums.asSnapshot())
+    }
+
     private fun viewModel(repository: AlbumRepository) = AlbumsViewModel(
         getPagedAlbums = GetPagedAlbumsUseCase(repository),
         loadAlbums = LoadAlbumsUseCase(repository),
@@ -181,6 +193,7 @@ class AlbumsViewModelTest {
         private val pagingSourceFactory = cache.asPagingSourceFactory(scope)
         var loadCount = 0
             private set
+        var toggleFailure: Exception? = null
 
         override fun getPagedAlbums(): Flow<PagingData<Album>> =
             Pager(
@@ -196,6 +209,7 @@ class AlbumsViewModelTest {
         }
 
         override suspend fun toggleFavorite(id: Int) {
+            toggleFailure?.let { throw it }
             cache.value = cache.value.map { album ->
                 if (album.id == id) album.copy(isFavorite = !album.isFavorite) else album
             }

@@ -111,6 +111,18 @@ class FavoritesViewModelTest {
         assertEquals(listOf(3), repository.toggledIds)
     }
 
+    @Test
+    fun `onFavoriteClick keeps the favorites when toggling fails`() = runTest {
+        val repository = FakeAlbumRepository(favorites)
+        repository.toggleFailure = IOException("database error")
+        val vm = subscribedViewModel(repository)
+        favorites.emit(listOf(album(3)))
+
+        vm.onFavoriteClick(album(3))
+
+        assertEquals(success(album(3)), vm.uiState.value)
+    }
+
     /** `uiState` only reads the favorites while it is collected. */
     private fun TestScope.subscribedViewModel(repository: AlbumRepository): FavoritesViewModel {
         val vm = FavoritesViewModel(
@@ -131,6 +143,7 @@ class FavoritesViewModelTest {
 
         private var reads = 0
         val toggledIds = mutableListOf<Int>()
+        var toggleFailure: Exception? = null
 
         override fun getPagedAlbums(): Flow<PagingData<Album>> = emptyFlow()
 
@@ -139,6 +152,7 @@ class FavoritesViewModelTest {
         override suspend fun loadAlbums() = Unit
 
         override suspend fun toggleFavorite(id: Int) {
+            toggleFailure?.let { throw it }
             toggledIds += id
         }
     }
