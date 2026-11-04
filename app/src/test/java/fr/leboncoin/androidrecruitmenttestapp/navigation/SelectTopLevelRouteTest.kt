@@ -3,7 +3,7 @@ package fr.leboncoin.androidrecruitmenttestapp.navigation
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import fr.leboncoin.feature.albums.api.AlbumsRoute
-import fr.leboncoin.feature.favorites.ui.FavoritesRoute
+import fr.leboncoin.feature.favorites.api.FavoritesRoute
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

@@ -43,6 +43,7 @@ dependencies {
     implementation(project(":feature:albums:api"))
     implementation(project(":feature:albums:presentation"))
     implementation(project(":feature:albums:ui"))
+    implementation(project(":feature:favorites:api"))
     implementation(project(":feature:favorites:presentation"))
     implementation(project(":feature:favorites:ui"))
 

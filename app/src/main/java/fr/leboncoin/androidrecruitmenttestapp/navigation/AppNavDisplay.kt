@@ -26,7 +26,7 @@ import fr.leboncoin.androidrecruitmenttestapp.R
 import fr.leboncoin.core.domain.model.Album
 import fr.leboncoin.feature.albums.api.AlbumsRoute
 import fr.leboncoin.feature.albums.ui.albumsEntry
-import fr.leboncoin.feature.favorites.ui.FavoritesRoute
+import fr.leboncoin.feature.favorites.api.FavoritesRoute
 import fr.leboncoin.feature.favorites.ui.favoritesEntry
 
 private data class TopLevelDestination(
