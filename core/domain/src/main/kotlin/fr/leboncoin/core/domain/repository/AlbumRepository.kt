@@ -15,6 +15,9 @@ interface AlbumRepository {
     /** Emits all the favorite albums, then again each time the cache changes. */
     fun getFavoriteAlbums(): Flow<List<Album>>
 
+    /** Emits the album with this [id][Album.id], or null, then again when the cache changes. */
+    fun getAlbum(id: Int): Flow<Album?>
+
     /**
      * Fetches the albums from the network and updates the cache if they changed. Favorites
      * are kept, except for the albums that the network no longer returns.

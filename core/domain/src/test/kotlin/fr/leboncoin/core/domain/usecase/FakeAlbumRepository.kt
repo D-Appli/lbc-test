@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.emptyFlow
 internal class FakeAlbumRepository(
     private val pagedAlbums: Flow<PagingData<Album>> = emptyFlow(),
     private val favoriteAlbums: Flow<List<Album>> = emptyFlow(),
+    private val albumById: (Int) -> Flow<Album?> = { emptyFlow() },
     private val onLoad: suspend () -> Unit = {},
 ) : AlbumRepository {
 
@@ -20,6 +21,8 @@ internal class FakeAlbumRepository(
     override fun getPagedAlbums(): Flow<PagingData<Album>> = pagedAlbums
 
     override fun getFavoriteAlbums(): Flow<List<Album>> = favoriteAlbums
+
+    override fun getAlbum(id: Int): Flow<Album?> = albumById(id)
 
     override suspend fun loadAlbums() {
         loadCount++

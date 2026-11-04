@@ -24,9 +24,11 @@ import com.adevinta.spark.icons.SparkIcon
 import com.adevinta.spark.icons.SparkIcons
 import fr.leboncoin.androidrecruitmenttestapp.R
 import fr.leboncoin.core.domain.model.Album
-import fr.leboncoin.feature.albums.ui.AlbumsRoute
+import fr.leboncoin.feature.albums.api.AlbumsRoute
 import fr.leboncoin.feature.albums.ui.albumsEntry
-import fr.leboncoin.feature.favorites.ui.FavoritesRoute
+import fr.leboncoin.feature.details.api.navigateToDetails
+import fr.leboncoin.feature.details.ui.detailsEntry
+import fr.leboncoin.feature.favorites.api.FavoritesRoute
 import fr.leboncoin.feature.favorites.ui.favoritesEntry
 
 private data class TopLevelDestination(
@@ -54,14 +56,20 @@ fun AppNavDisplay(
     modifier: Modifier = Modifier,
 ) {
     val backStack = rememberNavBackStack(AlbumsRoute)
+    val currentRoute = backStack.last()
+    val onItemSelected: (Album) -> Unit = { album ->
+        if (backStack.navigateToDetails(album.id)) onAlbumSelected(album)
+    }
 
     Scaffold(
         modifier = modifier,
         bottomBar = {
-            AppNavigationBar(
-                currentRoute = backStack.last(),
-                onDestinationSelected = backStack::selectTopLevelRoute,
-            )
+            if (topLevelDestinations.any { it.route == currentRoute }) {
+                AppNavigationBar(
+                    currentRoute = currentRoute,
+                    onDestinationSelected = backStack::selectTopLevelRoute,
+                )
+            }
         },
     ) { contentPadding ->
         // Only the bottom bar is applied: the screens draw edge to edge below the status bar.
@@ -79,8 +87,9 @@ fun AppNavDisplay(
                 rememberViewModelStoreNavEntryDecorator(),
             ),
             entryProvider = entryProvider {
-                albumsEntry(onItemSelected = onAlbumSelected)
-                favoritesEntry(onItemSelected = onAlbumSelected)
+                albumsEntry(onItemSelected = onItemSelected)
+                favoritesEntry(onItemSelected = onItemSelected)
+                detailsEntry(onBack = { backStack.removeLastOrNull() })
             },
         )
     }

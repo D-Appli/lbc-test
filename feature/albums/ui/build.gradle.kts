@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -28,6 +27,7 @@ android {
 
 dependencies {
     implementation(project(":core:domain"))
+    implementation(project(":feature:albums:api"))
     implementation(project(":feature:albums:presentation"))
     implementation(project(":libs:albums:ui"))
 

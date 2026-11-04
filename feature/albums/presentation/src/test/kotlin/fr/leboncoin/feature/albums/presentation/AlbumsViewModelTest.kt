@@ -203,6 +203,8 @@ class AlbumsViewModelTest {
 
         override fun getFavoriteAlbums(): Flow<List<Album>> = emptyFlow()
 
+        override fun getAlbum(id: Int): Flow<Album?> = emptyFlow()
+
         override suspend fun loadAlbums() {
             loadCount++
             cache.value = fetchRemote()
