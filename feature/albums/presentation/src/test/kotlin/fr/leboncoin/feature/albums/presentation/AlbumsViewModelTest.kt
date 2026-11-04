@@ -15,14 +15,16 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import java.io.IOException
+import java.net.UnknownHostException
 
 class AlbumsViewModelTest {
 
@@ -111,31 +113,89 @@ class AlbumsViewModelTest {
     }
 
     @Test
-    fun `isLoading is false before any load`() = runTest {
+    fun `uiState is idle before any load`() = runTest {
         val vm = viewModel(fakeRepository(cached) { remote })
 
-        assertFalse(vm.isLoading.value)
+        assertEquals(AlbumsUiState.Idle, vm.uiState.value)
     }
 
     @Test
-    fun `isLoading is true while the albums load, then false`() = runTest {
+    fun `uiState is loading while the albums load, then idle`() = runTest {
         val loaded = CompletableDeferred<Unit>()
         val vm = viewModel(fakeRepository(cached) { loaded.await(); remote })
 
         vm.refresh()
-        assertTrue(vm.isLoading.value)
+        assertEquals(AlbumsUiState.Loading, vm.uiState.value)
 
         loaded.complete(Unit)
-        assertFalse(vm.isLoading.value)
+        assertEquals(AlbumsUiState.Idle, vm.uiState.value)
     }
 
     @Test
-    fun `isLoading is false after a failed load`() = runTest {
-        val vm = viewModel(fakeRepository(cached) { throw IOException("network down") })
+    fun `uiState is error after a failed load`() = runTest {
+        val vm = viewModel(fakeRepository(cached) { throw IOException("server error") })
 
         vm.refresh()
 
-        assertFalse(vm.isLoading.value)
+        assertEquals(AlbumsUiState.Error, vm.uiState.value)
+    }
+
+    @Test
+    fun `uiState is idle after a load failed offline`() = runTest {
+        val vm = viewModel(fakeRepository(cached) { throw UnknownHostException("offline") })
+
+        vm.refresh()
+
+        assertEquals(AlbumsUiState.Idle, vm.uiState.value)
+    }
+
+    @Test
+    fun `refresh clears the error once the load succeeds`() = runTest {
+        var online = false
+        val vm = viewModel(fakeRepository(cached) { if (online) remote else throw IOException("server error") })
+        vm.refresh()
+
+        online = true
+        vm.refresh()
+
+        assertEquals(AlbumsUiState.Idle, vm.uiState.value)
+    }
+
+    @Test
+    fun `uiState is unavailable when the albums cannot be paged`() = runTest {
+        val repository = fakeRepository(cached) { remote }
+        repository.pagingFailure = IllegalStateException("database error")
+        val vm = viewModel(repository)
+
+        collectAlbums(vm)
+
+        assertEquals(AlbumsUiState.Unavailable, vm.uiState.value)
+    }
+
+    @Test
+    fun `uiState stays unavailable when the load ends after paging failed`() = runTest {
+        val loaded = CompletableDeferred<Unit>()
+        val repository = fakeRepository(cached) { loaded.await(); remote }
+        repository.pagingFailure = IllegalStateException("database error")
+        val vm = viewModel(repository)
+        collectAlbums(vm)
+
+        loaded.complete(Unit)
+
+        assertEquals(AlbumsUiState.Unavailable, vm.uiState.value)
+    }
+
+    @Test
+    fun `uiState stays unavailable when the load fails after paging failed`() = runTest {
+        val loaded = CompletableDeferred<Unit>()
+        val repository = fakeRepository(cached) { loaded.await(); throw IOException("server error") }
+        repository.pagingFailure = IllegalStateException("database error")
+        val vm = viewModel(repository)
+        collectAlbums(vm)
+
+        loaded.complete(Unit)
+
+        assertEquals(AlbumsUiState.Unavailable, vm.uiState.value)
     }
 
     @Test
@@ -171,6 +231,10 @@ class AlbumsViewModelTest {
         assertEquals(remote, vm.albums.asSnapshot())
     }
 
+    private fun TestScope.collectAlbums(vm: AlbumsViewModel) {
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { vm.albums.collect {} }
+    }
+
     private fun viewModel(repository: AlbumRepository) = AlbumsViewModel(
         getPagedAlbums = GetPagedAlbumsUseCase(repository),
         loadAlbums = LoadAlbumsUseCase(repository),
@@ -194,12 +258,15 @@ class AlbumsViewModelTest {
         var loadCount = 0
             private set
         var toggleFailure: Exception? = null
+        var pagingFailure: Exception? = null
 
-        override fun getPagedAlbums(): Flow<PagingData<Album>> =
-            Pager(
+        override fun getPagedAlbums(): Flow<PagingData<Album>> {
+            pagingFailure?.let { throw it }
+            return Pager(
                 config = PagingConfig(pageSize = 20, enablePlaceholders = false),
                 pagingSourceFactory = pagingSourceFactory,
             ).flow
+        }
 
         override fun getFavoriteAlbums(): Flow<List<Album>> = emptyFlow()
 
