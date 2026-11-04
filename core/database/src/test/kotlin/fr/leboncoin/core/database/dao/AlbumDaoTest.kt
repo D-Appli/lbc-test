@@ -12,6 +12,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -171,6 +172,38 @@ class AlbumDaoTest {
             .toList()
 
         assertEquals(listOf(emptyList(), listOf(album(1, isFavorite = true))), emissions)
+    }
+
+    @Test
+    fun `observeAlbum emits the album with this id`() = runTest {
+        dao.replaceAllIfChanged(listOf(album(1), album(2)))
+
+        assertEquals(album(2), dao.observeAlbum(2).first())
+    }
+
+    @Test
+    fun `observeAlbum emits null when the album is not cached`() = runTest {
+        dao.replaceAllIfChanged(listOf(album(1), album(3)))
+
+        assertNull(dao.observeAlbum(2).first())
+    }
+
+    @Test
+    fun `observeAlbum emits again when the album changes`() = runTest {
+        dao.replaceAllIfChanged(listOf(album(1)))
+        var toggled = false
+
+        val emissions = dao.observeAlbum(1)
+            .onEach {
+                if (!toggled) {
+                    toggled = true
+                    dao.toggleFavorite(1)
+                }
+            }
+            .take(2)
+            .toList()
+
+        assertEquals(listOf(album(1), album(1, isFavorite = true)), emissions)
     }
 
     private fun album(

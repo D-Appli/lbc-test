@@ -33,4 +33,9 @@ dependencies {
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
+
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
+    // AlbumRepository exposes PagingData, for the fake of the tests.
+    testImplementation(libs.paging.common)
 }

@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Test
 import java.io.IOException
 
@@ -49,6 +50,20 @@ class AlbumRepositoryImplTest {
         every { albumDao.observeFavorites() } returns flowOf(listOf(entity.copy(isFavorite = true)))
 
         assertEquals(listOf(album.copy(isFavorite = true)), repository.getFavoriteAlbums().first())
+    }
+
+    @Test
+    fun `getAlbum maps the cached album`() = runTest {
+        every { albumDao.observeAlbum(1) } returns flowOf(entity)
+
+        assertEquals(album, repository.getAlbum(1).first())
+    }
+
+    @Test
+    fun `getAlbum emits null when the album is not cached`() = runTest {
+        every { albumDao.observeAlbum(1) } returns flowOf(null)
+
+        assertNull(repository.getAlbum(1).first())
     }
 
     @Test
