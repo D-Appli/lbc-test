@@ -1,0 +1,8 @@
+<resources>
+    <string name="details_back">Back</string>
+    <string name="details_add_to_favorites">Add to favorites</string>
+    <string name="details_remove_from_favorites">Remove from favorites</string>
+    <string name="details_album_number">Album #%1$d</string>
+    <string name="details_track_number">Track #%1$d</string>
+    <string name="details_error">This album is not available</string>
+</resources>

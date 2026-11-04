@@ -1,6 +1,5 @@
 package fr.leboncoin.androidrecruitmenttestapp
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -26,7 +25,7 @@ class MainActivity : ComponentActivity() {
                 AppNavDisplay(
                     onAlbumSelected = {
                         analyticsHelper.trackSelection(it.id.toString())
-                        startActivity(Intent(this, DetailsActivity::class.java))
+                        analyticsHelper.trackScreenView("Details")
                     }
                 )
             }
