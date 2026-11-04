@@ -44,7 +44,15 @@ class AlbumsViewModel @Inject constructor(
 
     /** The cache is updated, which reloads [albums] with the new favorite. */
     fun onFavoriteClick(album: Album) {
-        viewModelScope.launch { toggleFavorite(album.id) }
+        viewModelScope.launch {
+            try {
+                toggleFavorite(album.id)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                // TODO: Track the failure. The album simply keeps its current state.
+            }
+        }
     }
 
     fun refresh() {

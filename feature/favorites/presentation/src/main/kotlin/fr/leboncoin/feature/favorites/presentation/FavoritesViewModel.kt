@@ -7,6 +7,7 @@ import fr.leboncoin.core.domain.model.Album
 import fr.leboncoin.core.domain.usecase.GetFavoriteAlbumsUseCase
 import fr.leboncoin.core.domain.usecase.ToggleFavoriteUseCase
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -48,7 +49,15 @@ class FavoritesViewModel @Inject constructor(
 
     /** The cache is updated, which removes the album from [uiState]. */
     fun onFavoriteClick(album: Album) {
-        viewModelScope.launch { toggleFavorite(album.id) }
+        viewModelScope.launch {
+            try {
+                toggleFavorite(album.id)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                // TODO: Track the failure. The album simply keeps its current state.
+            }
+        }
     }
 
     fun onRetryClick() {
