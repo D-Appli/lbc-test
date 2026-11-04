@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -27,6 +28,10 @@ import com.adevinta.spark.ExperimentalSparkApi
 import com.adevinta.spark.SparkTheme
 import com.adevinta.spark.components.card.Card
 import com.adevinta.spark.components.chips.ChipTinted
+import com.adevinta.spark.components.icons.Icon
+import com.adevinta.spark.icons.LikeFill
+import com.adevinta.spark.icons.SparkIcons
+import com.adevinta.spark.tokens.dim3
 import fr.leboncoin.core.domain.model.Album
 
 @OptIn(ExperimentalSparkApi::class)
@@ -83,10 +88,22 @@ fun AlbumItem(
                         text = "Album #${album.albumId}"
                     )
                     ChipTinted(
-                        text = "Track #${album.id}"
-                    )
+                        leadingIcon = {
+                            Icon(
+                                sparkIcon = SparkIcons.LikeFill,
+                                contentDescription = null,
+                                modifier = Modifier.size(ChipIconSize),
+                                tint = SparkTheme.colors.onSurface.dim3,
+                            )
+                        },
+                    ) {
+                        Text(text = "Track #${album.id}")
+                    }
                 }
             }
         }
     }
 }
+
+// Same size as the leading icon of a Spark chip, which does not expose it.
+private val ChipIconSize = 16.dp
