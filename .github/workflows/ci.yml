@@ -36,8 +36,8 @@ jobs:
 
       # A single invocation avoids configuring the project twice.
       # core:domain is a pure Kotlin module: its tests run with `test`, not `testDebugUnitTest`.
-      - name: Build & unit tests
-        run: ./gradlew assembleDebug testDebugUnitTest :core:domain:test --stacktrace
+      - name: Build, unit tests & screenshot tests
+        run: ./gradlew assembleDebug testDebugUnitTest :core:domain:test validateDebugScreenshotTest --stacktrace
 
       - name: Upload test reports
         if: always()
@@ -47,4 +47,5 @@ jobs:
           path: |
             **/build/reports/tests/
             **/build/test-results/
+            **/build/reports/screenshotTest/
           if-no-files-found: ignore
