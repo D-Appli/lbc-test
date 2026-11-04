@@ -1,0 +1,4 @@
+<resources>
+    <string name="album_add_to_favorites">Add to favorites</string>
+    <string name="album_remove_from_favorites">Remove from favorites</string>
+</resources>

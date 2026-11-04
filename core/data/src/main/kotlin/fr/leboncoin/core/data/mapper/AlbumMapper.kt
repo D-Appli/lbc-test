@@ -18,4 +18,5 @@ internal fun AlbumEntity.toDomain(): Album = Album(
     title = title,
     url = url,
     thumbnailUrl = thumbnailUrl,
+    isFavorite = isFavorite,
 )

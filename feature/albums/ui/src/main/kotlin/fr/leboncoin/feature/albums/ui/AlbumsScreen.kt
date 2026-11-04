@@ -66,6 +66,7 @@ fun AlbumsScreen(
                         AlbumItem(
                             album = album,
                             onItemSelected = onItemSelected,
+                            onFavoriteClick = viewModel::onFavoriteClick,
                         )
                     }
                 }

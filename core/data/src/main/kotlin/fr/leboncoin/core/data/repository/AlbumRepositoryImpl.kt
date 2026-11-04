@@ -32,6 +32,8 @@ internal class AlbumRepositoryImpl @Inject constructor(
         albumDao.replaceAllIfChanged(albums)
     }
 
+    override suspend fun toggleFavorite(id: Int) = albumDao.toggleFavorite(id)
+
     /**
      * Ids are unique, but the backend may send one twice by mistake. Keeps the first
      * occurrence, so the result does not depend on anything but the response order, and

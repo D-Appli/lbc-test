@@ -13,9 +13,13 @@ interface AlbumRepository {
     fun getPagedAlbums(): Flow<PagingData<Album>>
 
     /**
-     * Fetches the albums from the network and updates the cache if they changed.
+     * Fetches the albums from the network and updates the cache if they changed. Favorites
+     * are kept, except for the albums that the network no longer returns.
      *
      * @throws Exception if the albums cannot be fetched, e.g. when offline.
      */
     suspend fun loadAlbums()
+
+    /** Adds the album with this [id][Album.id] to the favorites, or removes it. */
+    suspend fun toggleFavorite(id: Int)
 }

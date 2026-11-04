@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
@@ -39,6 +40,7 @@ import fr.leboncoin.core.domain.model.Album
 fun AlbumItem(
     album: Album,
     onItemSelected : (Album) -> Unit,
+    onFavoriteClick: (Album) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Card(
@@ -88,12 +90,23 @@ fun AlbumItem(
                         text = "Album #${album.albumId}"
                     )
                     ChipTinted(
+                        onClick = { onFavoriteClick(album) },
                         leadingIcon = {
                             Icon(
                                 sparkIcon = SparkIcons.LikeFill,
-                                contentDescription = null,
+                                contentDescription = stringResource(
+                                    if (album.isFavorite) {
+                                        R.string.album_remove_from_favorites
+                                    } else {
+                                        R.string.album_add_to_favorites
+                                    },
+                                ),
                                 modifier = Modifier.size(ChipIconSize),
-                                tint = SparkTheme.colors.onSurface.dim3,
+                                tint = if (album.isFavorite) {
+                                    SparkTheme.colors.error
+                                } else {
+                                    SparkTheme.colors.onSurface.dim3
+                                },
                             )
                         },
                     ) {
