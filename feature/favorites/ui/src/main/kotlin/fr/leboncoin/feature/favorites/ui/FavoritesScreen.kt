@@ -1,5 +1,10 @@
 package fr.leboncoin.feature.favorites.ui
 
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.VisibilityThreshold
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -13,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.adevinta.spark.components.buttons.ButtonFilled
@@ -47,17 +53,22 @@ fun FavoritesScreen(
                 )
             }
 
-            is FavoritesUiState.Success -> if (state.albums.isEmpty()) {
-                CenteredContent(contentPadding) {
-                    Text(text = stringResource(R.string.favorites_empty))
+            is FavoritesUiState.Success -> Crossfade(
+                targetState = state.albums.isEmpty(),
+                label = "favorites content",
+            ) { isEmpty ->
+                if (isEmpty) {
+                    CenteredContent(contentPadding) {
+                        Text(text = stringResource(R.string.favorites_empty))
+                    }
+                } else {
+                    FavoritesList(
+                        albums = state.albums,
+                        contentPadding = contentPadding,
+                        onItemSelected = onItemSelected,
+                        onFavoriteClick = viewModel::onFavoriteClick,
+                    )
                 }
-            } else {
-                FavoritesList(
-                    albums = state.albums,
-                    contentPadding = contentPadding,
-                    onItemSelected = onItemSelected,
-                    onFavoriteClick = viewModel::onFavoriteClick,
-                )
             }
         }
     }
@@ -84,6 +95,14 @@ private fun FavoritesList(
                 album = album,
                 onItemSelected = onItemSelected,
                 onFavoriteClick = onFavoriteClick,
+                modifier = Modifier.animateItem(
+                    fadeOutSpec = tween(durationMillis = 250),
+                    placementSpec = spring(
+                        dampingRatio = Spring.DampingRatioLowBouncy,
+                        stiffness = Spring.StiffnessMediumLow,
+                        visibilityThreshold = IntOffset.VisibilityThreshold,
+                    ),
+                ),
             )
         }
     }
