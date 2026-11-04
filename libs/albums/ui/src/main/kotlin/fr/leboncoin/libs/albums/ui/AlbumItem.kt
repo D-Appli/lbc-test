@@ -105,7 +105,7 @@ private val CardMinHeight = 120.dp
 
 @Preview
 @Composable
-private fun AlbumItemPreview(
+internal fun AlbumItemPreview(
     @PreviewParameter(AlbumPreviewProvider::class) album: Album,
 ) {
     SparkTheme {

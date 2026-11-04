@@ -145,7 +145,7 @@ private fun CenteredContent(
 
 @Preview
 @Composable
-private fun FavoritesPreview(
+internal fun FavoritesPreview(
     @PreviewParameter(FavoritesUiStatePreviewProvider::class) uiState: FavoritesUiState,
 ) {
     SparkTheme {

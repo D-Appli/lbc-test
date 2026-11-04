@@ -38,7 +38,7 @@ fun AlbumLabel(
 
 @Preview
 @Composable
-private fun AlbumLabelPreview() {
+internal fun AlbumLabelPreview() {
     SparkTheme {
         AlbumLabel(text = "Album #1")
     }

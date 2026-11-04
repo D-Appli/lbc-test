@@ -13,6 +13,7 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -28,7 +29,7 @@ import com.adevinta.spark.components.scaffold.Scaffold
 import fr.leboncoin.core.domain.model.Album
 import fr.leboncoin.feature.albums.presentation.AlbumsViewModel
 import fr.leboncoin.libs.albums.ui.AlbumItem
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.MutableStateFlow
 
 @Composable
 fun AlbumsScreen(
@@ -110,7 +111,7 @@ private fun AlbumsContent(
 
 @Preview
 @Composable
-private fun AlbumsPreview() {
+internal fun AlbumsPreview() {
     val albums = listOf(
         Album(id = 1, albumId = 1, title = "accusamus beatae ad facilis", url = "", thumbnailUrl = ""),
         Album(
@@ -123,9 +124,12 @@ private fun AlbumsPreview() {
         ),
     )
 
+    // A StateFlow gives the items on the first frame, which is the only one a static preview shows.
+    val pagingData = remember { MutableStateFlow(PagingData.from(albums)) }
+
     SparkTheme {
         AlbumsContent(
-            albums = flowOf(PagingData.from(albums)).collectAsLazyPagingItems(),
+            albums = pagingData.collectAsLazyPagingItems(),
             isLoading = false,
             onRefresh = {},
             onItemSelected = {},

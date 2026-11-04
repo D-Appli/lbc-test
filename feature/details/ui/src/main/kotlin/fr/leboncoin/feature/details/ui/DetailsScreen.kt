@@ -239,7 +239,7 @@ private fun CenteredContent(content: @Composable () -> Unit) {
 @Preview(name = "Portrait", widthDp = 411, heightDp = 914)
 @Preview(name = "Landscape", widthDp = 914, heightDp = 411)
 @Composable
-private fun DetailsPreview(
+internal fun DetailsPreview(
     @PreviewParameter(DetailsUiStatePreviewProvider::class) uiState: DetailsUiState,
 ) {
     SparkTheme {

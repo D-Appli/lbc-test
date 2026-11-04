@@ -15,6 +15,7 @@ plugins {
     alias(libs.plugins.android.library) apply false
     alias(libs.plugins.hilt) apply false
     alias(libs.plugins.room) apply false
+    alias(libs.plugins.screenshot) apply false
 }
 
 subprojects {

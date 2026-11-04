@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.screenshot)
 }
 
 android {
@@ -23,6 +24,7 @@ android {
     buildFeatures {
         compose = true
     }
+    experimentalProperties["android.experimental.enableScreenshotTest"] = true
 }
 
 dependencies {
@@ -45,4 +47,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(platform(libs.spark.bom))
     implementation(libs.spark)
+
+    screenshotTestImplementation(libs.screenshot.validation.api)
+    screenshotTestImplementation(libs.androidx.ui.tooling)
 }
