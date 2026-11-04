@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.screenshot)
 }
 
 android {
@@ -23,9 +24,11 @@ android {
     buildFeatures {
         compose = true
     }
+    experimentalProperties["android.experimental.enableScreenshotTest"] = true
 }
 
 dependencies {
+    implementation(project(":core:analytics"))
     implementation(project(":core:domain"))
     implementation(project(":feature:details:api"))
     implementation(project(":feature:details:presentation"))
@@ -38,8 +41,13 @@ dependencies {
     implementation(libs.androidx.navigation3.runtime)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
+    implementation(libs.androidx.ui.tooling.preview)
+    debugImplementation(libs.androidx.ui.tooling)
     // The transparent TopAppBar, which Spark does not provide.
     implementation(libs.androidx.material3)
     implementation(platform(libs.spark.bom))
     implementation(libs.spark)
+
+    screenshotTestImplementation(libs.screenshot.validation.api)
+    screenshotTestImplementation(libs.androidx.ui.tooling)
 }

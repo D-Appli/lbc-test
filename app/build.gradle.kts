@@ -38,6 +38,7 @@ android {
 }
 
 dependencies {
+    implementation(project(":core:analytics"))
     implementation(project(":core:domain"))
     implementation(project(":core:data"))
     implementation(project(":feature:albums:api"))

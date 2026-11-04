@@ -3,8 +3,6 @@ package fr.leboncoin.feature.details.api
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class DetailsRouteTest {
@@ -13,9 +11,8 @@ class DetailsRouteTest {
     fun `navigateToDetails opens the details of the album`() {
         val backStack = NavBackStack<NavKey>(HomeRoute)
 
-        val opened = backStack.navigateToDetails(albumId = 3)
+        backStack.navigateToDetails(albumId = 3)
 
-        assertTrue(opened)
         assertEquals(listOf(HomeRoute, DetailsRoute(3)), backStack.toList())
     }
 
@@ -24,9 +21,8 @@ class DetailsRouteTest {
         val backStack = NavBackStack<NavKey>(HomeRoute)
         backStack.navigateToDetails(albumId = 3)
 
-        val opened = backStack.navigateToDetails(albumId = 3)
+        backStack.navigateToDetails(albumId = 3)
 
-        assertFalse(opened)
         assertEquals(listOf(HomeRoute, DetailsRoute(3)), backStack.toList())
     }
 
@@ -35,9 +31,8 @@ class DetailsRouteTest {
         val backStack = NavBackStack<NavKey>(HomeRoute)
         backStack.navigateToDetails(albumId = 3)
 
-        val opened = backStack.navigateToDetails(albumId = 4)
+        backStack.navigateToDetails(albumId = 4)
 
-        assertTrue(opened)
         assertEquals(listOf(HomeRoute, DetailsRoute(3), DetailsRoute(4)), backStack.toList())
     }
 

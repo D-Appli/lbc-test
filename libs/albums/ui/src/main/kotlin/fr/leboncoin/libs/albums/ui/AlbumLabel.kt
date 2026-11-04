@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.adevinta.spark.SparkTheme
 import com.adevinta.spark.components.text.Text
@@ -32,5 +33,13 @@ fun AlbumLabel(
             color = SparkTheme.colors.onBasicContainer,
             style = SparkTheme.typography.body2,
         )
+    }
+}
+
+@Preview
+@Composable
+internal fun AlbumLabelPreview() {
+    SparkTheme {
+        AlbumLabel(text = "Album #1")
     }
 }
