@@ -21,6 +21,7 @@ dependencyResolutionManagement {
 
 rootProject.name = "Android RecruitmentTest App"
 include(":app")
+include(":core:analytics")
 include(":core:domain")
 include(":core:data")
 include(":core:database")

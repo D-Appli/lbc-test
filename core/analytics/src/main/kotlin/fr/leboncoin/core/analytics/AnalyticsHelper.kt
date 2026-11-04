@@ -1,4 +1,4 @@
-package fr.leboncoin.androidrecruitmenttestapp.utils
+package fr.leboncoin.core.analytics
 
 import javax.inject.Inject
 
