@@ -40,6 +40,7 @@ android {
 dependencies {
     implementation(project(":core:domain"))
     implementation(project(":core:data"))
+    implementation(project(":feature:albums:api"))
     implementation(project(":feature:albums:presentation"))
     implementation(project(":feature:albums:ui"))
     implementation(project(":feature:favorites:presentation"))
