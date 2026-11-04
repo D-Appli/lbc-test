@@ -27,7 +27,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.adevinta.spark.ExperimentalSparkApi
 import com.adevinta.spark.SparkTheme
 import com.adevinta.spark.components.appbar.TopAppBar
-import com.adevinta.spark.components.chips.ChipTinted
 import com.adevinta.spark.components.iconbuttons.IconButtonGhost
 import com.adevinta.spark.components.iconbuttons.IconButtonIntent
 import com.adevinta.spark.components.progress.Spinner
@@ -41,6 +40,7 @@ import fr.leboncoin.core.domain.model.Album
 import fr.leboncoin.feature.details.presentation.DetailsUiState
 import fr.leboncoin.feature.details.presentation.DetailsViewModel
 import fr.leboncoin.libs.albums.ui.AlbumImage
+import fr.leboncoin.libs.albums.ui.AlbumLabel
 
 private val SheetCornerRadius = 28.dp
 
@@ -147,8 +147,8 @@ private fun AlbumDetails(
                 style = SparkTheme.typography.headline1,
             )
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                ChipTinted(text = stringResource(R.string.details_album_number, album.albumId))
-                ChipTinted(text = stringResource(R.string.details_track_number, album.id))
+                AlbumLabel(text = stringResource(R.string.details_album_number, album.albumId))
+                AlbumLabel(text = stringResource(R.string.details_track_number, album.id))
             }
         }
     }

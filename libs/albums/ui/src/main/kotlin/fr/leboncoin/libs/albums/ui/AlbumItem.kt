@@ -69,9 +69,7 @@ fun AlbumItem(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    ChipTinted(
-                        text = "Album #${album.albumId}"
-                    )
+                    AlbumLabel(text = "Album #${album.albumId}")
                     ChipTinted(
                         onClick = { onFavoriteClick(album) },
                         leadingIcon = {
