@@ -23,7 +23,9 @@ internal class AlbumRepositoryImpl @Inject constructor(
 
     override fun getPagedAlbums(): Flow<PagingData<Album>> =
         Pager(
-            config = PagingConfig(pageSize = PAGE_SIZE, enablePlaceholders = false),
+            // Placeholders keep the index of each album when the cache changes, so that
+            // toggling a favorite does not make the list jump.
+            config = PagingConfig(pageSize = PAGE_SIZE, enablePlaceholders = true),
             pagingSourceFactory = albumDao::pagingSource,
         ).flow.map { albums -> albums.map { it.toDomain() } }
 
