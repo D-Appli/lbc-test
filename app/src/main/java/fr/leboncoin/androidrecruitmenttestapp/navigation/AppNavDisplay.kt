@@ -58,8 +58,7 @@ fun AppNavDisplay(
     val backStack = rememberNavBackStack(AlbumsRoute)
     val currentRoute = backStack.last()
     val onItemSelected: (Album) -> Unit = { album ->
-        onAlbumSelected(album)
-        backStack.navigateToDetails(album.id)
+        if (backStack.navigateToDetails(album.id)) onAlbumSelected(album)
     }
 
     Scaffold(
