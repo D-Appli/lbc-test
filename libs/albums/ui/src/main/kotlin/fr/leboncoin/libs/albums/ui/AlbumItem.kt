@@ -2,12 +2,10 @@ package fr.leboncoin.libs.albums.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
@@ -40,36 +38,36 @@ fun AlbumItem(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .height(120.dp)
             .padding(horizontal = 16.dp),
         onClick = { onItemSelected(album) },
     ) {
-        Row {
+        // The card grows when the text needs it, e.g. with a large font.
+        Row(verticalAlignment = Alignment.CenterVertically) {
             AlbumImage(
                 url = album.thumbnailUrl,
                 contentDescription = album.title,
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .aspectRatio(1f),
+                modifier = Modifier.size(CardMinHeight),
             )
 
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .heightIn(min = CardMinHeight)
                     .padding(14.dp),
+                verticalArrangement = Arrangement.SpaceBetween,
             ) {
                 Text(
                     text = album.title,
+                    modifier = Modifier.padding(bottom = 8.dp),
                     style = SparkTheme.typography.caption,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
 
-                Spacer(Modifier.weight(1f))
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    itemVerticalAlignment = Alignment.CenterVertically,
                 ) {
                     AlbumLabel(text = "Album #${album.albumId}")
                     ChipTinted(
@@ -103,6 +101,7 @@ fun AlbumItem(
 
 // Same size as the leading icon of a Spark chip, which does not expose it.
 private val ChipIconSize = 16.dp
+private val CardMinHeight = 120.dp
 
 @Preview
 @Composable
