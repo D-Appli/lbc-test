@@ -49,7 +49,7 @@ import fr.leboncoin.feature.details.presentation.DetailsViewModel
 import fr.leboncoin.libs.albums.ui.AlbumImage
 import fr.leboncoin.libs.albums.ui.AlbumLabel
 
-private val ImageCornerRadius = 28.dp
+private val ImageCornerRadius = 36.dp
 private val TopBarButtonPadding = 8.dp
 private val TopGradientHeight = 120.dp
 private val TopGradientColors = listOf(Color.Black.copy(alpha = 0.5f), Color.Transparent)
