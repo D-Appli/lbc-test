@@ -4,14 +4,19 @@ import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -52,6 +57,7 @@ import fr.leboncoin.libs.albums.ui.AlbumLabel
 private val ImageCornerRadius = 36.dp
 private val TopBarButtonPadding = 8.dp
 private val TopGradientHeight = 120.dp
+private const val WideScreenImageHeightRatio = 0.45f
 private val TopGradientColors = listOf(Color.Black.copy(alpha = 0.5f), Color.Transparent)
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -135,44 +141,55 @@ private fun FavoriteButton(
 private fun AlbumDetails(album: Album) {
     LightStatusBarIcons()
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
-    ) {
-        Box(
+    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+        // On a wide screen, the image is cropped so that the text remains visible.
+        val imageSize = if (maxWidth > maxHeight) {
+            Modifier.height(maxHeight * WideScreenImageHeightRatio)
+        } else {
+            Modifier.aspectRatio(1f)
+        }
+
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(1f)
-                .clip(RoundedCornerShape(bottomStart = ImageCornerRadius, bottomEnd = ImageCornerRadius)),
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()),
         ) {
-            AlbumImage(
-                url = album.url,
-                contentDescription = album.title,
-                modifier = Modifier.matchParentSize(),
-            )
-            // Keeps the status bar icons readable, whatever the colors of the image.
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(TopGradientHeight)
-                    .background(Brush.verticalGradient(TopGradientColors)),
-            )
-        }
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .navigationBarsPadding()
-                .padding(24.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            Text(
-                text = album.title,
-                style = SparkTheme.typography.headline1,
-            )
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                AlbumLabel(text = stringResource(R.string.details_album_number, album.albumId))
-                AlbumLabel(text = stringResource(R.string.details_track_number, album.id))
+                    .then(imageSize)
+                    .clip(RoundedCornerShape(bottomStart = ImageCornerRadius, bottomEnd = ImageCornerRadius)),
+            ) {
+                AlbumImage(
+                    url = album.url,
+                    contentDescription = album.title,
+                    modifier = Modifier.matchParentSize(),
+                )
+                // Keeps the status bar icons readable, whatever the colors of the image.
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(TopGradientHeight)
+                        .background(Brush.verticalGradient(TopGradientColors)),
+                )
+            }
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .windowInsetsPadding(
+                        WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom),
+                    )
+                    .padding(24.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                Text(
+                    text = album.title,
+                    style = SparkTheme.typography.headline1,
+                )
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    AlbumLabel(text = stringResource(R.string.details_album_number, album.albumId))
+                    AlbumLabel(text = stringResource(R.string.details_track_number, album.id))
+                }
             }
         }
     }
