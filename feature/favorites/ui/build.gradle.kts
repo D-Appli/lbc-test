@@ -26,10 +26,6 @@ android {
     }
 }
 
-composeCompiler {
-    stabilityConfigurationFiles.add(rootProject.layout.projectDirectory.file("compose_stability.conf"))
-}
-
 dependencies {
     implementation(project(":core:domain"))
     implementation(project(":feature:favorites:presentation"))
