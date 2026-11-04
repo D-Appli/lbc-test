@@ -9,6 +9,7 @@ import fr.leboncoin.core.domain.model.Album
 import fr.leboncoin.core.domain.repository.AlbumRepository
 import fr.leboncoin.core.domain.usecase.GetPagedAlbumsUseCase
 import fr.leboncoin.core.domain.usecase.LoadAlbumsUseCase
+import fr.leboncoin.core.domain.usecase.ToggleFavoriteUseCase
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -136,9 +137,31 @@ class AlbumsViewModelTest {
         assertFalse(vm.isLoading.value)
     }
 
+    @Test
+    fun `onFavoriteClick shows the album as a favorite`() = runTest {
+        val vm = viewModel(fakeRepository(remote) { remote })
+        vm.albums.asSnapshot()
+
+        vm.onFavoriteClick(album(2))
+
+        assertEquals(listOf(album(1), album(2).copy(isFavorite = true)), vm.albums.asSnapshot())
+    }
+
+    @Test
+    fun `onFavoriteClick toggles a favorite off`() = runTest {
+        val vm = viewModel(fakeRepository(remote) { remote })
+        vm.albums.asSnapshot()
+
+        vm.onFavoriteClick(album(2))
+        vm.onFavoriteClick(album(2))
+
+        assertEquals(remote, vm.albums.asSnapshot())
+    }
+
     private fun viewModel(repository: AlbumRepository) = AlbumsViewModel(
         getPagedAlbums = GetPagedAlbumsUseCase(repository),
         loadAlbums = LoadAlbumsUseCase(repository),
+        toggleFavorite = ToggleFavoriteUseCase(repository),
     )
 
     private fun TestScope.fakeRepository(
@@ -167,6 +190,12 @@ class AlbumsViewModelTest {
         override suspend fun loadAlbums() {
             loadCount++
             cache.value = fetchRemote()
+        }
+
+        override suspend fun toggleFavorite(id: Int) {
+            cache.value = cache.value.map { album ->
+                if (album.id == id) album.copy(isFavorite = !album.isFavorite) else album
+            }
         }
     }
 

@@ -61,11 +61,87 @@ class AlbumDaoTest {
         assertEquals(listOf(album(2, title = "new"), album(3)), dao.getAll())
     }
 
-    private fun album(id: Int, title: String = "title $id") = AlbumEntity(
+    @Test
+    fun `replaceAllIfChanged keeps the favorites when the albums change`() = runTest {
+        dao.replaceAllIfChanged(listOf(album(1), album(2)))
+        dao.toggleFavorite(1)
+
+        val changed = dao.replaceAllIfChanged(listOf(album(1, title = "new"), album(2), album(3)))
+
+        assertTrue(changed)
+        assertEquals(
+            listOf(album(1, title = "new", isFavorite = true), album(2), album(3)),
+            dao.getAll(),
+        )
+    }
+
+    @Test
+    fun `replaceAllIfChanged does not update the cache when only the favorites differ`() = runTest {
+        dao.replaceAllIfChanged(listOf(album(1), album(2)))
+        dao.toggleFavorite(1)
+
+        val changed = dao.replaceAllIfChanged(listOf(album(1), album(2)))
+
+        assertFalse(changed)
+        assertEquals(listOf(album(1, isFavorite = true), album(2)), dao.getAll())
+    }
+
+    @Test
+    fun `replaceAllIfChanged loses the favorite of an album that is no longer returned`() = runTest {
+        dao.replaceAllIfChanged(listOf(album(1), album(2)))
+        dao.toggleFavorite(1)
+
+        dao.replaceAllIfChanged(listOf(album(2)))
+        dao.replaceAllIfChanged(listOf(album(1), album(2)))
+
+        assertEquals(listOf(album(1), album(2)), dao.getAll())
+    }
+
+    @Test
+    fun `replaceAllIfChanged ignores the favorite value of the new albums`() = runTest {
+        dao.replaceAllIfChanged(listOf(album(1, isFavorite = true)))
+
+        assertEquals(listOf(album(1)), dao.getAll())
+    }
+
+    @Test
+    fun `toggleFavorite adds the album to the favorites`() = runTest {
+        dao.replaceAllIfChanged(listOf(album(1)))
+
+        dao.toggleFavorite(1)
+
+        assertEquals(listOf(album(1, isFavorite = true)), dao.getAll())
+    }
+
+    @Test
+    fun `toggleFavorite removes the album from the favorites`() = runTest {
+        dao.replaceAllIfChanged(listOf(album(1)))
+        dao.toggleFavorite(1)
+
+        dao.toggleFavorite(1)
+
+        assertEquals(listOf(album(1)), dao.getAll())
+    }
+
+    @Test
+    fun `toggleFavorite only changes the given album`() = runTest {
+        dao.replaceAllIfChanged(listOf(album(1), album(2)))
+
+        dao.toggleFavorite(2)
+
+        assertEquals(listOf(album(1), album(2, isFavorite = true)), dao.getAll())
+    }
+
+    private fun album(
+        id: Int,
+        title: String = "title $id",
+        isFavorite: Boolean = false,
+    ) = AlbumEntity(
         id = id,
         albumId = 1,
         title = title,
         url = "url $id",
         thumbnailUrl = "thumbnail $id",
+        isFavorite = isFavorite,
     )
 }

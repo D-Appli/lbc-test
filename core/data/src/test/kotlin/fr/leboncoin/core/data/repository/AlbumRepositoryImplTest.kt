@@ -35,6 +35,23 @@ class AlbumRepositoryImplTest {
     }
 
     @Test
+    fun `getPagedAlbums maps the favorites`() = runTest {
+        val pagingSourceFactory = listOf(entity.copy(isFavorite = true)).asPagingSourceFactory()
+        every { albumDao.pagingSource() } answers { pagingSourceFactory() }
+
+        assertEquals(listOf(album.copy(isFavorite = true)), repository.getPagedAlbums().asSnapshot())
+    }
+
+    @Test
+    fun `toggleFavorite toggles the album in the cache`() = runTest {
+        coEvery { albumDao.toggleFavorite(any()) } returns Unit
+
+        repository.toggleFavorite(1)
+
+        coVerify(exactly = 1) { albumDao.toggleFavorite(1) }
+    }
+
+    @Test
     fun `loadAlbums writes the network albums to the cache`() = runTest {
         coEvery { apiService.getAlbums() } returns listOf(dto)
         coEvery { albumDao.replaceAllIfChanged(any()) } returns true

@@ -14,10 +14,16 @@ internal class FakeAlbumRepository(
     var loadCount = 0
         private set
 
+    val toggledIds = mutableListOf<Int>()
+
     override fun getPagedAlbums(): Flow<PagingData<Album>> = pagedAlbums
 
     override suspend fun loadAlbums() {
         loadCount++
         onLoad()
+    }
+
+    override suspend fun toggleFavorite(id: Int) {
+        toggledIds += id
     }
 }
