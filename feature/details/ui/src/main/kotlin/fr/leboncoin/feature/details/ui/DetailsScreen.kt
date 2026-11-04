@@ -1,34 +1,34 @@
 package fr.leboncoin.feature.details.ui
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.adevinta.spark.ExperimentalSparkApi
 import com.adevinta.spark.SparkTheme
-import com.adevinta.spark.components.appbar.TopAppBar
-import com.adevinta.spark.components.iconbuttons.IconButtonGhost
+import com.adevinta.spark.components.buttons.ButtonShape
+import com.adevinta.spark.components.iconbuttons.IconButtonContrast
 import com.adevinta.spark.components.iconbuttons.IconButtonIntent
+import com.adevinta.spark.components.iconbuttons.IconButtonSize
 import com.adevinta.spark.components.progress.Spinner
 import com.adevinta.spark.components.scaffold.Scaffold
 import com.adevinta.spark.components.text.Text
@@ -42,9 +42,10 @@ import fr.leboncoin.feature.details.presentation.DetailsViewModel
 import fr.leboncoin.libs.albums.ui.AlbumImage
 import fr.leboncoin.libs.albums.ui.AlbumLabel
 
-private val SheetCornerRadius = 28.dp
+private val ImageCornerRadius = 28.dp
+private val TopBarButtonPadding = 8.dp
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalSparkApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailsScreen(
     viewModel: DetailsViewModel,
@@ -53,16 +54,32 @@ fun DetailsScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    Scaffold(
-        modifier = modifier,
-        topBar = {
+    Scaffold(modifier = modifier) {
+        // The app bar is drawn over the content, so the image goes behind it.
+        Box(modifier = Modifier.fillMaxSize()) {
+            when (val state = uiState) {
+                DetailsUiState.Loading -> CenteredContent {
+                    Spinner()
+                }
+
+                DetailsUiState.Error -> CenteredContent {
+                    Text(text = stringResource(R.string.details_error))
+                }
+
+                is DetailsUiState.Success -> AlbumDetails(album = state.album)
+            }
+
+            // The Spark TopAppBar does not allow a transparent container.
             TopAppBar(
                 title = {},
                 navigationIcon = {
-                    IconButtonGhost(
+                    IconButtonContrast(
                         icon = SparkIcons.ArrowLeft,
                         onClick = onBack,
+                        modifier = Modifier.padding(start = TopBarButtonPadding),
                         intent = IconButtonIntent.Neutral,
+                        shape = ButtonShape.Pill,
+                        size = IconButtonSize.Small,
                         contentDescription = stringResource(R.string.details_back),
                     )
                 },
@@ -74,21 +91,10 @@ fun DetailsScreen(
                         )
                     }
                 },
-            )
-        },
-    ) { contentPadding ->
-        when (val state = uiState) {
-            DetailsUiState.Loading -> CenteredContent(contentPadding) {
-                Spinner()
-            }
-
-            DetailsUiState.Error -> CenteredContent(contentPadding) {
-                Text(text = stringResource(R.string.details_error))
-            }
-
-            is DetailsUiState.Success -> AlbumDetails(
-                album = state.album,
-                contentPadding = contentPadding,
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Transparent,
+                    scrolledContainerColor = Color.Transparent,
+                ),
             )
         }
     }
@@ -99,10 +105,13 @@ private fun FavoriteButton(
     isFavorite: Boolean,
     onClick: () -> Unit,
 ) {
-    IconButtonGhost(
+    IconButtonContrast(
         icon = if (isFavorite) SparkIcons.LikeFill else SparkIcons.LikeOutline,
         onClick = onClick,
+        modifier = Modifier.padding(end = TopBarButtonPadding),
         intent = if (isFavorite) IconButtonIntent.Danger else IconButtonIntent.Neutral,
+        shape = ButtonShape.Pill,
+        size = IconButtonSize.Small,
         contentDescription = stringResource(
             if (isFavorite) {
                 R.string.details_remove_from_favorites
@@ -113,16 +122,11 @@ private fun FavoriteButton(
     )
 }
 
-/** The rounded sheet overlaps the bottom of the image. */
 @Composable
-private fun AlbumDetails(
-    album: Album,
-    contentPadding: PaddingValues,
-) {
+private fun AlbumDetails(album: Album) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(contentPadding)
             .verticalScroll(rememberScrollState()),
     ) {
         AlbumImage(
@@ -130,14 +134,12 @@ private fun AlbumDetails(
             contentDescription = album.title,
             modifier = Modifier
                 .fillMaxWidth()
-                .aspectRatio(1f),
+                .aspectRatio(1f)
+                .clip(RoundedCornerShape(bottomStart = ImageCornerRadius, bottomEnd = ImageCornerRadius)),
         )
         Column(
             modifier = Modifier
-                .offset(y = -SheetCornerRadius)
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(topStart = SheetCornerRadius, topEnd = SheetCornerRadius))
-                .background(SparkTheme.colors.surface)
                 .navigationBarsPadding()
                 .padding(24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -155,14 +157,9 @@ private fun AlbumDetails(
 }
 
 @Composable
-private fun CenteredContent(
-    contentPadding: PaddingValues,
-    content: @Composable () -> Unit,
-) {
+private fun CenteredContent(content: @Composable () -> Unit) {
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(contentPadding),
+        modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center,
     ) {
         content()
