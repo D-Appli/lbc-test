@@ -20,6 +20,7 @@ import androidx.paging.compose.itemKey
 import com.adevinta.spark.components.scaffold.Scaffold
 import fr.leboncoin.core.domain.model.Album
 import fr.leboncoin.feature.albums.presentation.AlbumsViewModel
+import fr.leboncoin.libs.albums.ui.AlbumItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

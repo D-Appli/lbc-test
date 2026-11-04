@@ -1,4 +1,4 @@
-package fr.leboncoin.feature.albums.ui
+package fr.leboncoin.libs.albums.ui
 
 import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
