@@ -36,6 +36,8 @@ dependencies {
     implementation(libs.androidx.navigation3.runtime)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
+    implementation(libs.androidx.ui.tooling.preview)
+    debugImplementation(libs.androidx.ui.tooling)
     implementation(platform(libs.spark.bom))
     implementation(libs.spark)
 }

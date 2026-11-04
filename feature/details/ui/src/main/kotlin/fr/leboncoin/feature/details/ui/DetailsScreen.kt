@@ -33,6 +33,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -60,7 +62,6 @@ private val TopGradientHeight = 120.dp
 private const val WideScreenImageHeightRatio = 0.45f
 private val TopGradientColors = listOf(Color.Black.copy(alpha = 0.5f), Color.Transparent)
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailsScreen(
     viewModel: DetailsViewModel,
@@ -69,10 +70,26 @@ fun DetailsScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+    DetailsContent(
+        uiState = uiState,
+        onBack = onBack,
+        onFavoriteClick = viewModel::onFavoriteClick,
+        modifier = modifier,
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun DetailsContent(
+    uiState: DetailsUiState,
+    onBack: () -> Unit,
+    onFavoriteClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Scaffold(modifier = modifier) {
         // The app bar is drawn over the content, so the image goes behind it.
         Box(modifier = Modifier.fillMaxSize()) {
-            when (val state = uiState) {
+            when (uiState) {
                 DetailsUiState.Loading -> CenteredContent {
                     Spinner()
                 }
@@ -81,7 +98,7 @@ fun DetailsScreen(
                     Text(text = stringResource(R.string.details_error))
                 }
 
-                is DetailsUiState.Success -> AlbumDetails(album = state.album)
+                is DetailsUiState.Success -> AlbumDetails(album = uiState.album)
             }
 
             // The Spark TopAppBar does not allow a transparent container.
@@ -102,7 +119,7 @@ fun DetailsScreen(
                     (uiState as? DetailsUiState.Success)?.let { state ->
                         FavoriteButton(
                             isFavorite = state.album.isFavorite,
-                            onClick = viewModel::onFavoriteClick,
+                            onClick = onFavoriteClick,
                         )
                     }
                 },
@@ -216,5 +233,20 @@ private fun CenteredContent(content: @Composable () -> Unit) {
         contentAlignment = Alignment.Center,
     ) {
         content()
+    }
+}
+
+@Preview(name = "Portrait", widthDp = 411, heightDp = 914)
+@Preview(name = "Landscape", widthDp = 914, heightDp = 411)
+@Composable
+private fun DetailsPreview(
+    @PreviewParameter(DetailsUiStatePreviewProvider::class) uiState: DetailsUiState,
+) {
+    SparkTheme {
+        DetailsContent(
+            uiState = uiState,
+            onBack = {},
+            onFavoriteClick = {},
+        )
     }
 }

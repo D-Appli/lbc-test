@@ -16,6 +16,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import com.adevinta.spark.ExperimentalSparkApi
 import com.adevinta.spark.SparkTheme
@@ -101,3 +103,13 @@ fun AlbumItem(
 
 // Same size as the leading icon of a Spark chip, which does not expose it.
 private val ChipIconSize = 16.dp
+
+@Preview
+@Composable
+private fun AlbumItemPreview(
+    @PreviewParameter(AlbumPreviewProvider::class) album: Album,
+) {
+    SparkTheme {
+        AlbumItem(album = album, onItemSelected = {}, onFavoriteClick = {})
+    }
+}

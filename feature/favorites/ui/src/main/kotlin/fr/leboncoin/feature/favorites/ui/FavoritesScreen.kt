@@ -18,9 +18,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.adevinta.spark.SparkTheme
 import com.adevinta.spark.components.buttons.ButtonFilled
 import com.adevinta.spark.components.progress.Spinner
 import com.adevinta.spark.components.scaffold.Scaffold
@@ -39,8 +42,25 @@ fun FavoritesScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+    FavoritesContent(
+        uiState = uiState,
+        onItemSelected = onItemSelected,
+        onFavoriteClick = viewModel::onFavoriteClick,
+        onRetryClick = viewModel::onRetryClick,
+        modifier = modifier,
+    )
+}
+
+@Composable
+private fun FavoritesContent(
+    uiState: FavoritesUiState,
+    onItemSelected: (Album) -> Unit,
+    onFavoriteClick: (Album) -> Unit,
+    onRetryClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Scaffold(modifier = modifier) { contentPadding ->
-        when (val state = uiState) {
+        when (uiState) {
             FavoritesUiState.Loading -> CenteredContent(contentPadding) {
                 Spinner()
             }
@@ -48,13 +68,13 @@ fun FavoritesScreen(
             FavoritesUiState.Error -> CenteredContent(contentPadding) {
                 Text(text = stringResource(R.string.favorites_error))
                 ButtonFilled(
-                    onClick = viewModel::onRetryClick,
+                    onClick = onRetryClick,
                     text = stringResource(R.string.favorites_retry),
                 )
             }
 
             is FavoritesUiState.Success -> Crossfade(
-                targetState = state.albums.isEmpty(),
+                targetState = uiState.albums.isEmpty(),
                 label = "favorites content",
             ) { isEmpty ->
                 if (isEmpty) {
@@ -63,10 +83,10 @@ fun FavoritesScreen(
                     }
                 } else {
                     FavoritesList(
-                        albums = state.albums,
+                        albums = uiState.albums,
                         contentPadding = contentPadding,
                         onItemSelected = onItemSelected,
-                        onFavoriteClick = viewModel::onFavoriteClick,
+                        onFavoriteClick = onFavoriteClick,
                     )
                 }
             }
@@ -121,4 +141,19 @@ private fun CenteredContent(
         horizontalAlignment = Alignment.CenterHorizontally,
         content = content,
     )
+}
+
+@Preview
+@Composable
+private fun FavoritesPreview(
+    @PreviewParameter(FavoritesUiStatePreviewProvider::class) uiState: FavoritesUiState,
+) {
+    SparkTheme {
+        FavoritesContent(
+            uiState = uiState,
+            onItemSelected = {},
+            onFavoriteClick = {},
+            onRetryClick = {},
+        )
+    }
 }

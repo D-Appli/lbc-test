@@ -36,6 +36,8 @@ dependencies {
     implementation(libs.androidx.navigation3.runtime)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
+    implementation(libs.androidx.ui.tooling.preview)
+    debugImplementation(libs.androidx.ui.tooling)
     // Pull to refresh, which Spark does not provide; the version comes from the Compose BOM.
     implementation(libs.androidx.material3)
     implementation(platform(libs.spark.bom))
