@@ -1,0 +1,5 @@
+<resources>
+    <string name="favorites_empty">No favorites yet</string>
+    <string name="favorites_error">The favorites could not be loaded</string>
+    <string name="favorites_retry">Retry</string>
+</resources>

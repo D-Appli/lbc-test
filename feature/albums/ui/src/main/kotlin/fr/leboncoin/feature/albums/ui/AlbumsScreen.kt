@@ -1,7 +1,10 @@
 package fr.leboncoin.feature.albums.ui
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -20,6 +23,7 @@ import androidx.paging.compose.itemKey
 import com.adevinta.spark.components.scaffold.Scaffold
 import fr.leboncoin.core.domain.model.Album
 import fr.leboncoin.feature.albums.presentation.AlbumsViewModel
+import fr.leboncoin.libs.albums.ui.AlbumItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -61,12 +65,17 @@ fun AlbumsScreen(
                     key = albums.itemKey { album -> album.id },
                     contentType = albums.itemContentType { "album" },
                 ) { index ->
-                    // Accessing an item close to the end of the loaded pages loads the next one.
-                    albums[index]?.let { album ->
+                    // Accessing an item close to the loaded pages loads the next ones.
+                    val album = albums[index]
+                    if (album != null) {
                         AlbumItem(
                             album = album,
                             onItemSelected = onItemSelected,
+                            onFavoriteClick = viewModel::onFavoriteClick,
                         )
+                    } else {
+                        // Same height as AlbumItem, so that the scroll does not shift on load.
+                        Spacer(Modifier.fillMaxWidth().height(120.dp))
                     }
                 }
             }

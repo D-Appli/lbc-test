@@ -9,10 +9,12 @@ import fr.leboncoin.core.domain.model.Album
 import fr.leboncoin.core.domain.repository.AlbumRepository
 import fr.leboncoin.core.domain.usecase.GetPagedAlbumsUseCase
 import fr.leboncoin.core.domain.usecase.LoadAlbumsUseCase
+import fr.leboncoin.core.domain.usecase.ToggleFavoriteUseCase
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -136,9 +138,43 @@ class AlbumsViewModelTest {
         assertFalse(vm.isLoading.value)
     }
 
+    @Test
+    fun `onFavoriteClick shows the album as a favorite`() = runTest {
+        val vm = viewModel(fakeRepository(remote) { remote })
+        vm.albums.asSnapshot()
+
+        vm.onFavoriteClick(album(2))
+
+        assertEquals(listOf(album(1), album(2).copy(isFavorite = true)), vm.albums.asSnapshot())
+    }
+
+    @Test
+    fun `onFavoriteClick toggles a favorite off`() = runTest {
+        val vm = viewModel(fakeRepository(remote) { remote })
+        vm.albums.asSnapshot()
+
+        vm.onFavoriteClick(album(2))
+        vm.onFavoriteClick(album(2))
+
+        assertEquals(remote, vm.albums.asSnapshot())
+    }
+
+    @Test
+    fun `onFavoriteClick keeps the albums when toggling fails`() = runTest {
+        val repository = fakeRepository(remote) { remote }
+        val vm = viewModel(repository)
+        vm.albums.asSnapshot()
+        repository.toggleFailure = IOException("database error")
+
+        vm.onFavoriteClick(album(2))
+
+        assertEquals(remote, vm.albums.asSnapshot())
+    }
+
     private fun viewModel(repository: AlbumRepository) = AlbumsViewModel(
         getPagedAlbums = GetPagedAlbumsUseCase(repository),
         loadAlbums = LoadAlbumsUseCase(repository),
+        toggleFavorite = ToggleFavoriteUseCase(repository),
     )
 
     private fun TestScope.fakeRepository(
@@ -157,6 +193,7 @@ class AlbumsViewModelTest {
         private val pagingSourceFactory = cache.asPagingSourceFactory(scope)
         var loadCount = 0
             private set
+        var toggleFailure: Exception? = null
 
         override fun getPagedAlbums(): Flow<PagingData<Album>> =
             Pager(
@@ -164,9 +201,18 @@ class AlbumsViewModelTest {
                 pagingSourceFactory = pagingSourceFactory,
             ).flow
 
+        override fun getFavoriteAlbums(): Flow<List<Album>> = emptyFlow()
+
         override suspend fun loadAlbums() {
             loadCount++
             cache.value = fetchRemote()
+        }
+
+        override suspend fun toggleFavorite(id: Int) {
+            toggleFailure?.let { throw it }
+            cache.value = cache.value.map { album ->
+                if (album.id == id) album.copy(isFavorite = !album.isFavorite) else album
+            }
         }
     }
 

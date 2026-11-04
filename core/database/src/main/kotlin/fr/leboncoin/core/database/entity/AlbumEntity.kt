@@ -10,4 +10,6 @@ data class AlbumEntity(
     val title: String,
     val url: String,
     val thumbnailUrl: String,
+    /** Stored only on this device: the backend does not know about favorites. */
+    val isFavorite: Boolean = false,
 )

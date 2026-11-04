@@ -8,6 +8,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import fr.leboncoin.core.domain.model.Album
 import fr.leboncoin.core.domain.usecase.GetPagedAlbumsUseCase
 import fr.leboncoin.core.domain.usecase.LoadAlbumsUseCase
+import fr.leboncoin.core.domain.usecase.ToggleFavoriteUseCase
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
@@ -23,6 +24,7 @@ import javax.inject.Inject
 class AlbumsViewModel @Inject constructor(
     getPagedAlbums: GetPagedAlbumsUseCase,
     private val loadAlbums: LoadAlbumsUseCase,
+    private val toggleFavorite: ToggleFavoriteUseCase,
 ) : ViewModel() {
 
     private var refreshJob: Job? = null
@@ -39,6 +41,19 @@ class AlbumsViewModel @Inject constructor(
     val albums: Flow<PagingData<Album>> = getPagedAlbums()
         .onStart { refresh() }
         .cachedIn(viewModelScope)
+
+    /** The cache is updated, which reloads [albums] with the new favorite. */
+    fun onFavoriteClick(album: Album) {
+        viewModelScope.launch {
+            try {
+                toggleFavorite(album.id)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                // TODO: Track the failure. The album simply keeps its current state.
+            }
+        }
+    }
 
     fun refresh() {
         if (refreshJob?.isActive == true) return

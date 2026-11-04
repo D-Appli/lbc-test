@@ -29,6 +29,7 @@ android {
 dependencies {
     implementation(project(":core:domain"))
     implementation(project(":feature:albums:presentation"))
+    implementation(project(":libs:albums:ui"))
 
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.hilt.lifecycle.viewmodel.compose)
@@ -40,6 +41,4 @@ dependencies {
     implementation(platform(libs.spark.bom))
     implementation(libs.spark)
     implementation(libs.paging.compose)
-    implementation(libs.coil.compose)
-    implementation(libs.coil.network.okhttp)
 }

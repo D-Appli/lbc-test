@@ -6,4 +6,5 @@ data class Album(
     val title: String,
     val url: String,
     val thumbnailUrl: String,
+    val isFavorite: Boolean = false,
 )
