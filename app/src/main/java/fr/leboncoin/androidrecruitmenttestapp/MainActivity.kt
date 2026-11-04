@@ -25,12 +25,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             CompositionLocalProvider(LocalAnalyticsHelper provides analyticsHelper) {
                 SparkTheme {
-                    AppNavDisplay(
-                        onAlbumSelected = {
-                            analyticsHelper.trackSelection(it.id.toString())
-                            analyticsHelper.trackScreenView("Details")
-                        }
-                    )
+                    AppNavDisplay()
                 }
             }
         }

@@ -26,6 +26,7 @@ android {
 }
 
 dependencies {
+    implementation(project(":core:analytics"))
     implementation(project(":core:domain"))
     implementation(project(":feature:details:api"))
     implementation(project(":feature:details:presentation"))

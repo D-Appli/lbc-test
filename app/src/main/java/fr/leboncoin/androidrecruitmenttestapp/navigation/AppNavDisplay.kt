@@ -51,15 +51,10 @@ private val topLevelDestinations = listOf(
 )
 
 @Composable
-fun AppNavDisplay(
-    onAlbumSelected: (Album) -> Unit,
-    modifier: Modifier = Modifier,
-) {
+fun AppNavDisplay(modifier: Modifier = Modifier) {
     val backStack = rememberNavBackStack(AlbumsRoute)
     val currentRoute = backStack.last()
-    val onItemSelected: (Album) -> Unit = { album ->
-        if (backStack.navigateToDetails(album.id)) onAlbumSelected(album)
-    }
+    val onItemSelected: (Album) -> Unit = { album -> backStack.navigateToDetails(album.id) }
 
     Scaffold(
         modifier = modifier,
