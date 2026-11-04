@@ -149,6 +149,8 @@ class FavoritesViewModelTest {
 
         override fun getFavoriteAlbums(): Flow<List<Album>> = favoriteFlows[reads++]
 
+        override fun getAlbum(id: Int): Flow<Album?> = emptyFlow()
+
         override suspend fun loadAlbums() = Unit
 
         override suspend fun toggleFavorite(id: Int) {

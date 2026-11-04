@@ -23,6 +23,10 @@ abstract class AlbumDao {
     @Query("SELECT * FROM albums WHERE isFavorite = 1 ORDER BY id")
     abstract fun observeFavorites(): Flow<List<AlbumEntity>>
 
+    /** Emits the album, or null if it is not cached, then again each time the table changes. */
+    @Query("SELECT * FROM albums WHERE id = :id")
+    abstract fun observeAlbum(id: Int): Flow<AlbumEntity?>
+
     @Query("SELECT * FROM albums ORDER BY id")
     abstract suspend fun getAll(): List<AlbumEntity>
 

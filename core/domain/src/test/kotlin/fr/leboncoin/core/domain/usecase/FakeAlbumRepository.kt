@@ -21,6 +21,8 @@ internal class FakeAlbumRepository(
 
     override fun getFavoriteAlbums(): Flow<List<Album>> = favoriteAlbums
 
+    override fun getAlbum(id: Int): Flow<Album?> = emptyFlow()
+
     override suspend fun loadAlbums() {
         loadCount++
         onLoad()

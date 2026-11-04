@@ -32,6 +32,9 @@ internal class AlbumRepositoryImpl @Inject constructor(
     override fun getFavoriteAlbums(): Flow<List<Album>> =
         albumDao.observeFavorites().map { albums -> albums.map { it.toDomain() } }
 
+    override fun getAlbum(id: Int): Flow<Album?> =
+        albumDao.observeAlbum(id).map { album -> album?.toDomain() }
+
     override suspend fun loadAlbums() {
         val albums = albumApiService.getAlbums().distinctById().map { it.toEntity() }
         albumDao.replaceAllIfChanged(albums)
