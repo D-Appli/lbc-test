@@ -65,6 +65,8 @@ dependencies {
     implementation(platform(libs.spark.bom))
     implementation(libs.spark)
 
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
     implementation(libs.timber)
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
