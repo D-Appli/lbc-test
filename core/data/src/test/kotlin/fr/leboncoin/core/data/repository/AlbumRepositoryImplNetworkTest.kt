@@ -8,6 +8,7 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
+import kotlinx.serialization.SerializationException
 import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -20,7 +21,7 @@ import org.junit.Test
 
 /**
  * Runs [AlbumRepositoryImpl] with the real Retrofit setup of the app. Only the network call
- * is replaced: an interceptor answers with the local `albums.json` file.
+ * is replaced: an interceptor answers with a local JSON file.
  */
 class AlbumRepositoryImplNetworkTest {
 
@@ -100,6 +101,17 @@ class AlbumRepositoryImplNetworkTest {
                     ),
                 )
             )
+        }
+    }
+
+    @Test(expected = SerializationException::class)
+    fun `loadAlbums throws and keeps the cache when the response is malformed`() = runTest {
+        responseFile = "mal-formatted-albums.json"
+
+        try {
+            repository.loadAlbums()
+        } finally {
+            coVerify(exactly = 0) { albumDao.replaceAllIfChanged(any()) }
         }
     }
 
