@@ -30,6 +30,7 @@ dependencies {
     api(libs.androidx.lifecycle.viewmodel.ktx)
     api(libs.paging.common)
 
+    implementation(libs.timber)
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
 

@@ -40,6 +40,7 @@ dependencies {
 
     implementation(libs.paging.common)
 
+    implementation(libs.timber)
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
 

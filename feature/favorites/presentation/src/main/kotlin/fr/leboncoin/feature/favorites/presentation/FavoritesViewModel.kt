@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -36,8 +37,9 @@ class FavoritesViewModel @Inject constructor(
             getFavoriteAlbums()
                 .map<List<Album>, FavoritesUiState> { FavoritesUiState.Success(it.toImmutableList()) }
                 .onStart { emit(FavoritesUiState.Loading) }
-                .catch {
+                .catch { e ->
                     // TODO this should never happen, would be nice to track
+                    Timber.e(e, "Failed to observe the favorite albums")
                     emit(FavoritesUiState.Error)
                 }
         }
@@ -56,6 +58,7 @@ class FavoritesViewModel @Inject constructor(
                 throw e
             } catch (e: Exception) {
                 // TODO: Track the failure. The album simply keeps its current state.
+                Timber.e(e, "Failed to toggle the favorite of album ${album.id}")
             }
         }
     }

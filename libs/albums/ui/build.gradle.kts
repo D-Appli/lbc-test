@@ -38,7 +38,6 @@ dependencies {
     implementation(platform(libs.spark.bom))
     implementation(libs.spark)
     implementation(libs.coil.compose)
-    implementation(libs.coil.network.okhttp)
 
     screenshotTestImplementation(libs.screenshot.validation.api)
     screenshotTestImplementation(libs.androidx.ui.tooling)

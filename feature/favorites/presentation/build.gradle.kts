@@ -32,6 +32,7 @@ dependencies {
     // @Immutable on the UI state, which only needs the annotation and not the Compose runtime.
     implementation(libs.androidx.compose.runtime.annotation)
 
+    implementation(libs.timber)
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
 

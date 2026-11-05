@@ -26,4 +26,5 @@ dependencies {
     api(platform(libs.androidx.compose.bom))
     api(libs.androidx.compose.runtime)
     implementation(libs.javax.inject)
+    implementation(libs.timber)
 }

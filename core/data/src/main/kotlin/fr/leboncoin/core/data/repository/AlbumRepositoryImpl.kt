@@ -13,6 +13,7 @@ import fr.leboncoin.core.domain.model.Album
 import fr.leboncoin.core.domain.repository.AlbumRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import timber.log.Timber
 import javax.inject.Inject
 
 /** Offline-first: the database is the single source of truth, the network only updates it. */
@@ -42,7 +43,7 @@ internal class AlbumRepositoryImpl @Inject constructor(
         check(albums.isNotEmpty() || response.isEmpty()) { "All the albums of the response are invalid" }
         if (albums.size < response.size) {
             // TODO: Track the anomaly (e.g. a non-fatal report) so the backend can fix it.
-            println("AlbumRepository: dropped ${response.size - albums.size} invalid albums")
+            Timber.w("Dropped ${response.size - albums.size} invalid albums")
         }
         albumDao.replaceAllIfChanged(albums.distinctById())
     }
@@ -60,7 +61,7 @@ internal class AlbumRepositoryImpl @Inject constructor(
             .keys
         if (conflictingIds.isNotEmpty()) {
             // TODO: Track the anomaly (e.g. a non-fatal report) so the backend can fix it.
-            println("AlbumRepository: conflicting albums for ids $conflictingIds, keeping the first ones")
+            Timber.w("Conflicting albums for ids $conflictingIds, keeping the first ones")
         }
         return distinctBy { it.id }
     }

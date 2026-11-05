@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 @HiltViewModel(assistedFactory = DetailsViewModel.Factory::class)
 class DetailsViewModel @AssistedInject constructor(
@@ -44,6 +45,7 @@ class DetailsViewModel @AssistedInject constructor(
                 throw e
             } catch (e: Exception) {
                 // TODO: Track the failure. The album simply keeps its current state.
+                Timber.e(e, "Failed to toggle the favorite of album $albumId")
             }
         }
     }

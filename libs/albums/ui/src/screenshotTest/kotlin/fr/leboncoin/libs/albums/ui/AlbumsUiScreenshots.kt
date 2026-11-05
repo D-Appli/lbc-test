@@ -23,3 +23,10 @@ fun AlbumItemScreenshot(
 fun AlbumLabelScreenshot() {
     AlbumLabelPreview()
 }
+
+@PreviewTest
+@Preview(showBackground = true)
+@Composable
+fun AlbumImagePlaceholderScreenshot() {
+    AlbumImagePlaceholderPreview()
+}
