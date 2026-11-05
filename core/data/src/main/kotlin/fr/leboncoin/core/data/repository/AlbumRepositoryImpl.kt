@@ -5,10 +5,10 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
 import fr.leboncoin.core.data.mapper.toDomain
-import fr.leboncoin.core.data.mapper.toEntity
+import fr.leboncoin.core.data.mapper.toEntityOrNull
 import fr.leboncoin.core.data.network.api.AlbumApiService
-import fr.leboncoin.core.data.network.model.AlbumDto
 import fr.leboncoin.core.database.dao.AlbumDao
+import fr.leboncoin.core.database.entity.AlbumEntity
 import fr.leboncoin.core.domain.model.Album
 import fr.leboncoin.core.domain.repository.AlbumRepository
 import kotlinx.coroutines.flow.Flow
@@ -36,8 +36,15 @@ internal class AlbumRepositoryImpl @Inject constructor(
         albumDao.observeAlbum(id).map { album -> album?.toDomain() }
 
     override suspend fun loadAlbums() {
-        val albums = albumApiService.getAlbums().distinctById().map { it.toEntity() }
-        albumDao.replaceAllIfChanged(albums)
+        val response = albumApiService.getAlbums()
+        val albums = response.mapNotNull { it.toEntityOrNull() }
+        // Replacing the cache with nothing would also lose the favorites.
+        check(albums.isNotEmpty() || response.isEmpty()) { "All the albums of the response are invalid" }
+        if (albums.size < response.size) {
+            // TODO: Track the anomaly (e.g. a non-fatal report) so the backend can fix it.
+            println("AlbumRepository: dropped ${response.size - albums.size} invalid albums")
+        }
+        albumDao.replaceAllIfChanged(albums.distinctById())
     }
 
     override suspend fun toggleFavorite(id: Int) = albumDao.toggleFavorite(id)
@@ -47,7 +54,7 @@ internal class AlbumRepositoryImpl @Inject constructor(
      * occurrence, so the result does not depend on anything but the response order, and
      * reports the ids whose duplicates have a different content.
      */
-    private fun List<AlbumDto>.distinctById(): List<AlbumDto> {
+    private fun List<AlbumEntity>.distinctById(): List<AlbumEntity> {
         val conflictingIds = groupBy { it.id }
             .filterValues { duplicates -> duplicates.distinct().size > 1 }
             .keys

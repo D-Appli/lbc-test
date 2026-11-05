@@ -113,6 +113,54 @@ class AlbumRepositoryImplTest {
         }
     }
 
+    @Test
+    fun `loadAlbums drops the albums with a missing field`() = runTest {
+        coEvery { apiService.getAlbums() } returns listOf(
+            dto,
+            dto.copy(id = null),
+            dto.copy(id = 2, albumId = null),
+            dto.copy(id = 3, title = null),
+            dto.copy(id = 4, url = null),
+            dto.copy(id = 5, thumbnailUrl = null),
+        )
+        coEvery { albumDao.replaceAllIfChanged(any()) } returns true
+
+        repository.loadAlbums()
+
+        coVerify(exactly = 1) { albumDao.replaceAllIfChanged(listOf(entity)) }
+    }
+
+    @Test
+    fun `loadAlbums keeps a valid album over an invalid duplicate`() = runTest {
+        coEvery { apiService.getAlbums() } returns listOf(dto.copy(title = null), dto)
+        coEvery { albumDao.replaceAllIfChanged(any()) } returns true
+
+        repository.loadAlbums()
+
+        coVerify(exactly = 1) { albumDao.replaceAllIfChanged(listOf(entity)) }
+    }
+
+    @Test(expected = IllegalStateException::class)
+    fun `loadAlbums throws and keeps the cache when all the albums are invalid`() = runTest {
+        coEvery { apiService.getAlbums() } returns listOf(dto.copy(id = null), dto.copy(title = null))
+
+        try {
+            repository.loadAlbums()
+        } finally {
+            coVerify(exactly = 0) { albumDao.replaceAllIfChanged(any()) }
+        }
+    }
+
+    @Test
+    fun `loadAlbums empties the cache when the response is empty`() = runTest {
+        coEvery { apiService.getAlbums() } returns emptyList()
+        coEvery { albumDao.replaceAllIfChanged(any()) } returns true
+
+        repository.loadAlbums()
+
+        coVerify(exactly = 1) { albumDao.replaceAllIfChanged(emptyList()) }
+    }
+
     @Test(expected = IOException::class)
     fun `loadAlbums throws and keeps the cache when the network fails`() = runTest {
         coEvery { apiService.getAlbums() } throws IOException("network down")
