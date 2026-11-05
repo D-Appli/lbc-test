@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -43,8 +44,9 @@ class AlbumsViewModel @Inject constructor(
      * ViewModel, so a configuration change neither reloads them nor triggers a new refresh.
      */
     val albums: Flow<PagingData<Album>> = flow { emitAll(getPagedAlbums()) }
-        .catch {
+        .catch { e ->
             // TODO: Track the failure. It is not reported anywhere else.
+            Timber.e(e, "Failed to page the albums")
             _uiState.update { AlbumsUiState.Unavailable }
         }
         .onStart { refresh() }
@@ -59,6 +61,7 @@ class AlbumsViewModel @Inject constructor(
                 throw e
             } catch (e: Exception) {
                 // TODO: Track the failure. The album simply keeps its current state.
+                Timber.e(e, "Failed to toggle the favorite of album ${album.id}")
             }
         }
     }

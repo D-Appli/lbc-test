@@ -115,6 +115,7 @@ class AlbumRepositoryImplNetworkTest {
         }
     }
 
+    // TODO we can inject it via hilt from dedicated test module
     private fun albumApiService(): AlbumApiService {
         val client = OkHttpClient.Builder().addInterceptor(localResponse).build()
         val retrofit = NetworkModule.provideRetrofit(client, NetworkModule.provideJson())

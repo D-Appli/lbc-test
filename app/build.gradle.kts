@@ -33,6 +33,7 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
     buildFeatures {
+        buildConfig = true
         compose = true
     }
 }
@@ -64,6 +65,7 @@ dependencies {
     implementation(platform(libs.spark.bom))
     implementation(libs.spark)
 
+    implementation(libs.timber)
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
 

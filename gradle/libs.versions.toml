@@ -12,6 +12,7 @@ retrofit = "3.0.0"
 spark = "1.4.0"
 kotlinSerialization = "1.12.0"
 okhttp = "5.5.1"
+timber = "5.0.1"
 ksp = "2.3.6"
 coil = "3.6.3"
 leakcanary = "2.14"
@@ -33,6 +34,7 @@ runtimeAnnotation = "1.12.1"
 kotlinxCollectionsImmutable = "0.4.0"
 
 [libraries]
+timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
