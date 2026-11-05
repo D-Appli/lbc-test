@@ -21,10 +21,6 @@ import com.adevinta.spark.ExperimentalSparkApi
 import com.adevinta.spark.SparkTheme
 import com.adevinta.spark.components.card.Card
 import com.adevinta.spark.components.chips.ChipTinted
-import com.adevinta.spark.components.icons.Icon
-import com.adevinta.spark.icons.LikeFill
-import com.adevinta.spark.icons.SparkIcons
-import com.adevinta.spark.tokens.dim3
 import fr.leboncoin.core.domain.model.Album
 
 @OptIn(ExperimentalSparkApi::class)
@@ -73,8 +69,8 @@ fun AlbumItem(
                     ChipTinted(
                         onClick = { onFavoriteClick(album) },
                         leadingIcon = {
-                            Icon(
-                                sparkIcon = SparkIcons.LikeFill,
+                            AlbumFavoriteIcon(
+                                isFavorite = album.isFavorite,
                                 contentDescription = stringResource(
                                     if (album.isFavorite) {
                                         R.string.album_remove_from_favorites
@@ -83,11 +79,6 @@ fun AlbumItem(
                                     },
                                 ),
                                 modifier = Modifier.size(ChipIconSize),
-                                tint = if (album.isFavorite) {
-                                    SparkTheme.colors.error
-                                } else {
-                                    SparkTheme.colors.onSurface.dim3
-                                },
                             )
                         },
                     ) {

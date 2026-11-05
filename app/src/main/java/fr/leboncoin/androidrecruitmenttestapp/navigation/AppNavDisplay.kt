@@ -15,6 +15,7 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.adevinta.spark.ExperimentalSparkApi
+import com.adevinta.spark.SparkTheme
 import com.adevinta.spark.components.appbar.NavigationBar
 import com.adevinta.spark.components.appbar.NavigationBarItem
 import com.adevinta.spark.components.scaffold.Scaffold
@@ -96,14 +97,24 @@ private fun AppNavigationBar(
     currentRoute: NavKey,
     onDestinationSelected: (NavKey) -> Unit,
 ) {
-    NavigationBar {
-        topLevelDestinations.forEach { destination ->
-            NavigationBarItem(
-                selected = destination.route == currentRoute,
-                onClick = { onDestinationSelected(destination.route) },
-                icon = destination.icon,
-                label = { Text(stringResource(destination.label)) },
-            )
+    // The Spark bar has no color parameter, so its colors are overridden through the theme.
+    val colors = SparkTheme.colors
+    SparkTheme(
+        colors = colors.copy(
+            surface = colors.basicContainer,
+            // The indicator of the selected item, which has the same tint as the bar by default.
+            supportContainer = colors.surface,
+        ),
+    ) {
+        NavigationBar {
+            topLevelDestinations.forEach { destination ->
+                NavigationBarItem(
+                    selected = destination.route == currentRoute,
+                    onClick = { onDestinationSelected(destination.route) },
+                    icon = destination.icon,
+                    label = { Text(stringResource(destination.label)) },
+                )
+            }
         }
     }
 }
