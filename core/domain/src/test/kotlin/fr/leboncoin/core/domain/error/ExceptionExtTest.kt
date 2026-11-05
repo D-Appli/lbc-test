@@ -17,13 +17,13 @@ class ExceptionExtTest {
     }
 
     @Test
-    fun `a refused connection is an offline error`() {
-        assertTrue(ConnectException("offline").isOfflineError())
+    fun `an unreachable host is an offline error`() {
+        assertTrue(NoRouteToHostException("offline").isOfflineError())
     }
 
     @Test
-    fun `an unreachable host is an offline error`() {
-        assertTrue(NoRouteToHostException("offline").isOfflineError())
+    fun `a refused connection is not an offline error`() {
+        assertFalse(ConnectException("connection refused").isOfflineError())
     }
 
     @Test
