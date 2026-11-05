@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
+import fr.leboncoin.core.domain.error.isOfflineError
 import fr.leboncoin.core.domain.model.Album
 import fr.leboncoin.core.domain.usecase.GetPagedAlbumsUseCase
 import fr.leboncoin.core.domain.usecase.LoadAlbumsUseCase
@@ -15,6 +16,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -29,16 +33,20 @@ class AlbumsViewModel @Inject constructor(
 
     private var refreshJob: Job? = null
 
-    private val _isLoading = MutableStateFlow(false)
+    private val _uiState = MutableStateFlow<AlbumsUiState>(AlbumsUiState.Idle)
 
-    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+    val uiState: StateFlow<AlbumsUiState> = _uiState.asStateFlow()
 
     /**
      * Cached albums, loaded page by page as the list scrolls. They are refreshed from the
      * network when the screen first collects them; `cachedIn` keeps the loaded pages in the
      * ViewModel, so a configuration change neither reloads them nor triggers a new refresh.
      */
-    val albums: Flow<PagingData<Album>> = getPagedAlbums()
+    val albums: Flow<PagingData<Album>> = flow { emitAll(getPagedAlbums()) }
+        .catch {
+            // TODO: Track the failure. It is not reported anywhere else.
+            _uiState.update { AlbumsUiState.Unavailable }
+        }
         .onStart { refresh() }
         .cachedIn(viewModelScope)
 
@@ -57,16 +65,17 @@ class AlbumsViewModel @Inject constructor(
 
     fun refresh() {
         if (refreshJob?.isActive == true) return
+        // Before launching, so that it cannot replace a failure of paging that happens first.
+        _uiState.update { AlbumsUiState.Loading }
         refreshJob = viewModelScope.launch {
-            _isLoading.update { true }
             try {
                 loadAlbums()
+                _uiState.update { if (it is AlbumsUiState.Loading) AlbumsUiState.Idle else it }
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                // TODO: Expose the failure as an Error UI state (see the TODO on refresh).
-            } finally {
-                _isLoading.update { false }
+                val state = if (e.isOfflineError()) AlbumsUiState.Idle else AlbumsUiState.Error
+                _uiState.update { if (it is AlbumsUiState.Loading) state else it }
             }
         }
     }

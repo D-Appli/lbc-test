@@ -1,0 +1,5 @@
+<resources>
+    <string name="albums_error">We are experiencing an issue. Please try again later.</string>
+    <string name="albums_idle">No albums are available yet.</string>
+    <string name="albums_loading">Loading…</string>
+</resources>
