@@ -43,7 +43,10 @@ class AlbumsViewModel @Inject constructor(
      * ViewModel, so a configuration change neither reloads them nor triggers a new refresh.
      */
     val albums: Flow<PagingData<Album>> = flow { emitAll(getPagedAlbums()) }
-        .catch { _uiState.update { AlbumsUiState.Unavailable } }
+        .catch {
+            // TODO: Track the failure. It is not reported anywhere else.
+            _uiState.update { AlbumsUiState.Unavailable }
+        }
         .onStart { refresh() }
         .cachedIn(viewModelScope)
 
