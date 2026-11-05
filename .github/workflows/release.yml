@@ -33,11 +33,21 @@ jobs:
       - name: Build the release APK
         run: ./gradlew :app:assembleRelease --stacktrace
 
+      # On a rerun, the action would append the generated notes to the existing ones.
+      - name: Check for an existing release
+        id: release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Publish the GitHub release
         uses: softprops/action-gh-release@v2
         with:
           name: ${{ github.ref_name }}
-          generate_release_notes: true
+          generate_release_notes: ${{ steps.release.outputs.exists != 'true' }}
           fail_on_unmatched_files: true
           files: |
             app/build/outputs/apk/release/app-release.apk
