@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.material3.pulltorefresh.pullToRefresh
@@ -71,6 +73,11 @@ private fun AlbumsContent(
     modifier: Modifier = Modifier,
 ) {
     val pullToRefreshState = rememberPullToRefreshState()
+    // Saved with the entry, so the scroll position comes back after the process is killed.
+    val listState = rememberLazyListState()
+    // After the process is killed, the albums are only presented after a first empty frame.
+    // Attaching listState to the empty list would move its restored position to the top.
+    val emptyListState = remember { LazyListState() }
     val isLoading = uiState is AlbumsUiState.Loading
     val isUnavailable = uiState is AlbumsUiState.Unavailable
     val isFailed = albums.loadState.refresh is LoadState.Error ||
@@ -105,6 +112,7 @@ private fun AlbumsContent(
         ) {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
+                state = if (albums.itemCount > 0) listState else emptyListState,
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 contentPadding = contentPadding,
             ) {
