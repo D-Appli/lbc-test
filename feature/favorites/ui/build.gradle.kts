@@ -33,17 +33,13 @@ dependencies {
     api(projects.feature.favorites.presentation)
     implementation(projects.libs.albums.ui)
 
-    implementation(libs.androidx.hilt.lifecycle.viewmodel.compose)
-    implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.bundles.feature.ui)
     // The entry is an extension of EntryProviderScope.
     api(libs.androidx.navigation3.runtime)
     implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.ui)
-    implementation(libs.androidx.ui.tooling.preview)
     debugImplementation(libs.androidx.ui.tooling)
     implementation(platform(libs.spark.bom))
-    implementation(libs.spark)
+    implementation(libs.bundles.compose.ui)
 
-    screenshotTestImplementation(libs.screenshot.validation.api)
-    screenshotTestImplementation(libs.androidx.ui.tooling)
+    screenshotTestImplementation(libs.bundles.screenshot.test)
 }

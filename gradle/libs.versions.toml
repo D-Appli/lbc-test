@@ -106,6 +106,15 @@ mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
 robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
 androidx-test-core = { group = "androidx.test", name = "core", version.ref = "androidxTestCore" }
 
+[bundles]
+# Compose UI with the Spark design system, for the modules with screens. The versions come from
+# the Compose and Spark BOMs, declared next to the bundle.
+compose-ui = ["androidx-ui", "androidx-ui-tooling-preview", "spark"]
+# Hilt ViewModels and lifecycle-aware collection, for the screens of the features.
+feature-ui = ["androidx-hilt-lifecycle-viewmodel-compose", "androidx-lifecycle-runtime-compose"]
+screenshot-test = ["screenshot-validation-api", "androidx-ui-tooling"]
+unit-test = ["junit", "kotlinx-coroutines-test"]
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
