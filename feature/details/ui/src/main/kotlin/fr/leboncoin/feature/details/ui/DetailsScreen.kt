@@ -63,7 +63,7 @@ private const val WideScreenImageHeightRatio = 0.45f
 private val TopGradientColors = listOf(Color.Black.copy(alpha = 0.5f), Color.Transparent)
 
 @Composable
-fun DetailsScreen(
+internal fun DetailsScreen(
     viewModel: DetailsViewModel,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
