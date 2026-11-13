@@ -28,10 +28,10 @@ android {
 }
 
 dependencies {
-    implementation(project(":feature:albums:api"))
+    implementation(projects.feature.albums.api)
     // The screen takes the ViewModel. Through api, app gets the @HiltViewModel classes.
-    api(project(":feature:albums:presentation"))
-    implementation(project(":libs:albums:ui"))
+    api(projects.feature.albums.presentation)
+    implementation(projects.libs.albums.ui)
 
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.hilt.lifecycle.viewmodel.compose)

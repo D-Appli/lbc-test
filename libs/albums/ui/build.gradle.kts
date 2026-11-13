@@ -40,7 +40,7 @@ android {
 
 dependencies {
     // AlbumItem takes an Album.
-    api(project(":core:domain"))
+    api(projects.core.domain)
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)

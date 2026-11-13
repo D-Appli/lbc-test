@@ -19,7 +19,11 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Android RecruitmentTest App"
+// Generates projects.core.domain and the like, checked at compile time.
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
+// Without spaces, which the type-safe project accessors require.
+rootProject.name = "AndroidRecruitmentTestApp"
 include(":app")
 include(":core:analytics")
 include(":core:domain")

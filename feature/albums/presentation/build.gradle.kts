@@ -25,7 +25,7 @@ android {
 
 dependencies {
     // The ViewModel exposes the domain models.
-    api(project(":core:domain"))
+    api(projects.core.domain)
 
     // ViewModel and PagingData are part of the public API of AlbumsViewModel.
     api(libs.androidx.lifecycle.viewmodel)

@@ -29,8 +29,8 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:domain"))
-    implementation(project(":core:database"))
+    implementation(projects.core.domain)
+    implementation(projects.core.database)
 
     implementation(libs.retrofit.core)
     implementation(libs.retrofit.kotlin.serialization)

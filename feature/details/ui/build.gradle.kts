@@ -28,12 +28,12 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:analytics"))
-    implementation(project(":core:domain"))
-    implementation(project(":feature:details:api"))
+    implementation(projects.core.analytics)
+    implementation(projects.core.domain)
+    implementation(projects.feature.details.api)
     // The screen takes the ViewModel. Through api, app gets the @HiltViewModel classes.
-    api(project(":feature:details:presentation"))
-    implementation(project(":libs:albums:ui"))
+    api(projects.feature.details.presentation)
+    implementation(projects.libs.albums.ui)
 
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.core)

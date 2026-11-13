@@ -25,7 +25,7 @@ android {
 
 dependencies {
     // The ViewModel exposes the domain models.
-    api(project(":core:domain"))
+    api(projects.core.domain)
 
     // ViewModel and ImmutableList are part of the public API of FavoritesViewModel.
     api(libs.androidx.lifecycle.viewmodel)

@@ -41,15 +41,15 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:analytics"))
-    implementation(project(":core:domain"))
-    implementation(project(":core:data"))
-    implementation(project(":feature:albums:api"))
-    implementation(project(":feature:albums:ui"))
-    implementation(project(":feature:details:api"))
-    implementation(project(":feature:details:ui"))
-    implementation(project(":feature:favorites:api"))
-    implementation(project(":feature:favorites:ui"))
+    implementation(projects.core.analytics)
+    implementation(projects.core.domain)
+    implementation(projects.core.data)
+    implementation(projects.feature.albums.api)
+    implementation(projects.feature.albums.ui)
+    implementation(projects.feature.details.api)
+    implementation(projects.feature.details.ui)
+    implementation(projects.feature.favorites.api)
+    implementation(projects.feature.favorites.ui)
 
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.navigation3.runtime)
