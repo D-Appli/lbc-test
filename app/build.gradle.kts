@@ -5,6 +5,14 @@ plugins {
     alias(libs.plugins.hilt)
 }
 
+val appVersionName = "0.2.0"
+
+// major * 10000 + minor * 100 + patch, e.g. 1.2.3 gives 10203, so that it follows the version name.
+val appVersionCode = appVersionName.split(".").map(String::toInt).let { (major, minor, patch) ->
+    require(minor < 100 && patch < 100) { "The minor and patch versions must be below 100" }
+    major * 10000 + minor * 100 + patch
+}
+
 android {
     namespace = "fr.leboncoin.androidrecruitmenttestapp"
     compileSdk = 37
@@ -13,8 +21,8 @@ android {
         applicationId = "fr.leboncoin.androidrecruitmenttestapp"
         minSdk = 24
         targetSdk = 37
-        versionCode = 2
-        versionName = "0.1.0"
+        versionCode = appVersionCode
+        versionName = appVersionName
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
