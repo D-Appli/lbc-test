@@ -36,8 +36,9 @@ jobs:
 
       # A single invocation avoids configuring the project twice.
       # core:domain is a pure Kotlin module: its tests run with `test`, not `testDebugUnitTest`.
-      - name: Build, unit tests & screenshot tests
-        run: ./gradlew assembleDebug testDebugUnitTest :core:domain:test validateDebugScreenshotTest --stacktrace
+      # buildHealth fails on an unused, misdeclared or duplicate dependency.
+      - name: Build, unit tests, screenshot tests & dependency health
+        run: ./gradlew assembleDebug testDebugUnitTest :core:domain:test validateDebugScreenshotTest buildHealth --stacktrace
 
       - name: Upload test reports
         if: always()
@@ -48,4 +49,5 @@ jobs:
             **/build/reports/tests/
             **/build/test-results/
             **/build/reports/screenshotTest/
+            build/reports/dependency-analysis/
           if-no-files-found: ignore

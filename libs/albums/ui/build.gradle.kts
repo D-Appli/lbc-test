@@ -39,16 +39,15 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:domain"))
+    // AlbumItem takes an Album.
+    api(projects.core.domain)
 
     implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.ui)
-    implementation(libs.androidx.ui.tooling.preview)
     debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
+    debugRuntimeOnly(libs.androidx.ui.test.manifest)
     implementation(libs.androidx.material3)
     implementation(platform(libs.spark.bom))
-    implementation(libs.spark)
+    implementation(libs.bundles.compose.ui)
     implementation(libs.coil.compose)
 
     testImplementation(libs.junit)
@@ -57,6 +56,5 @@ dependencies {
     testImplementation(platform(libs.androidx.compose.bom))
     testImplementation(libs.androidx.ui.test.junit4)
 
-    screenshotTestImplementation(libs.screenshot.validation.api)
-    screenshotTestImplementation(libs.androidx.ui.tooling)
+    screenshotTestImplementation(libs.bundles.screenshot.test)
 }

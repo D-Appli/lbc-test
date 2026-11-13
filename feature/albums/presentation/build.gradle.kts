@@ -24,17 +24,17 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:domain"))
+    // The ViewModel exposes the domain models.
+    api(projects.core.domain)
 
     // ViewModel and PagingData are part of the public API of AlbumsViewModel.
-    api(libs.androidx.lifecycle.viewmodel.ktx)
+    api(libs.androidx.lifecycle.viewmodel)
     api(libs.paging.common)
 
     implementation(libs.timber)
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
 
-    testImplementation(libs.junit)
-    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.bundles.unit.test)
     testImplementation(libs.paging.testing)
 }

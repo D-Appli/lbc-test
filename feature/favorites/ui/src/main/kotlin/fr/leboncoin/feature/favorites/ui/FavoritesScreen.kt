@@ -35,7 +35,7 @@ import fr.leboncoin.libs.albums.ui.AlbumItem
 import kotlinx.collections.immutable.ImmutableList
 
 @Composable
-fun FavoritesScreen(
+internal fun FavoritesScreen(
     viewModel: FavoritesViewModel,
     onItemSelected: (Album) -> Unit,
     modifier: Modifier = Modifier,

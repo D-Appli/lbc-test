@@ -24,10 +24,11 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:domain"))
+    // The ViewModel exposes the domain models.
+    api(projects.core.domain)
 
     // ViewModel is part of the public API of DetailsViewModel.
-    api(libs.androidx.lifecycle.viewmodel.ktx)
+    api(libs.androidx.lifecycle.viewmodel)
     // @Immutable on the UI state, which only needs the annotation and not the Compose runtime.
     implementation(libs.androidx.compose.runtime.annotation)
 
@@ -35,8 +36,7 @@ dependencies {
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
 
-    testImplementation(libs.junit)
-    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.bundles.unit.test)
     // AlbumRepository exposes PagingData, for the fake of the tests.
     testImplementation(libs.paging.common)
 }

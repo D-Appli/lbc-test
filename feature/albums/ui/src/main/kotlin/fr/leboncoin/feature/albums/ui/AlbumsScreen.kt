@@ -39,7 +39,7 @@ import fr.leboncoin.libs.albums.ui.AlbumItem
 import kotlinx.coroutines.flow.MutableStateFlow
 
 @Composable
-fun AlbumsScreen(
+internal fun AlbumsScreen(
     viewModel: AlbumsViewModel,
     onItemSelected : (Album) -> Unit,
     modifier: Modifier = Modifier,

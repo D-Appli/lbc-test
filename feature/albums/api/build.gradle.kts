@@ -24,4 +24,6 @@ android {
 
 dependencies {
     api(libs.androidx.navigation3.runtime)
+    // The routes are @Serializable; aligned with the version of the rest of the app.
+    api(libs.kotlin.serialization.core)
 }

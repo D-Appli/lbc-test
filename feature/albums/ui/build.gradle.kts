@@ -28,24 +28,23 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:domain"))
-    implementation(project(":feature:albums:api"))
-    implementation(project(":feature:albums:presentation"))
-    implementation(project(":libs:albums:ui"))
+    // The navigation entry takes a callback with an Album.
+    api(projects.core.domain)
+    implementation(projects.feature.albums.api)
+    // Hilt aggregates the @HiltViewModel classes from the runtime classpath of app.
+    implementation(projects.feature.albums.presentation)
+    implementation(projects.libs.albums.ui)
 
-    implementation(libs.androidx.lifecycle.runtime.compose)
-    implementation(libs.androidx.hilt.lifecycle.viewmodel.compose)
-    implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.bundles.feature.ui)
+    // The entry is an extension of EntryProviderScope.
+    api(libs.androidx.navigation3.runtime)
     implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.ui)
-    implementation(libs.androidx.ui.tooling.preview)
     debugImplementation(libs.androidx.ui.tooling)
     // Pull to refresh, which Spark does not provide; the version comes from the Compose BOM.
     implementation(libs.androidx.material3)
     implementation(platform(libs.spark.bom))
-    implementation(libs.spark)
+    implementation(libs.bundles.compose.ui)
     implementation(libs.paging.compose)
 
-    screenshotTestImplementation(libs.screenshot.validation.api)
-    screenshotTestImplementation(libs.androidx.ui.tooling)
+    screenshotTestImplementation(libs.bundles.screenshot.test)
 }

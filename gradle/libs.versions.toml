@@ -1,10 +1,7 @@
 [versions]
 agp = "9.4.1"
 kotlin = "2.4.21"
-coreKtx = "1.19.1"
 junit = "4.13.2"
-junitVersion = "1.3.0"
-espressoCore = "3.7.0"
 lifecycleRuntimeKtx = "2.11.0"
 activityCompose = "1.13.0"
 composeBom = "2025.09.00"
@@ -16,7 +13,6 @@ timber = "5.0.1"
 ksp = "2.3.6"
 coil = "3.6.3"
 leakcanary = "2.14"
-turbine = "1.2.1"
 coroutines = "1.11.0"
 mockk = "1.14.11"
 hilt = "2.60.1"
@@ -32,22 +28,18 @@ screenshot = "0.0.1-alpha16"
 hiltLifecycleViewmodelCompose = "1.4.0"
 runtimeAnnotation = "1.12.1"
 kotlinxCollectionsImmutable = "0.4.0"
+dependencyAnalysis = "3.20.2"
 
 [libraries]
 timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
-androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
-androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
-androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
-androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
 androidx-lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecycleRuntimeKtx" }
-androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycleRuntimeKtx" }
+androidx-lifecycle-viewmodel = { group = "androidx.lifecycle", name = "lifecycle-viewmodel", version.ref = "lifecycleRuntimeKtx" }
 androidx-lifecycle-viewmodel-navigation3 = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-navigation3", version.ref = "lifecycleRuntimeKtx" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
 androidx-compose-runtime = { group = "androidx.compose.runtime", name = "runtime" }
 androidx-ui = { group = "androidx.compose.ui", name = "ui" }
-androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 screenshot-validation-api = { group = "com.android.tools.screenshot", name = "screenshot-validation-api", version.ref = "screenshot" }
@@ -62,9 +54,11 @@ kotlin-gradle-plugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-p
 # Retrofit
 retrofit-core = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
 retrofit-kotlin-serialization = { group = "com.squareup.retrofit2", name = "converter-kotlinx-serialization", version.ref = "retrofit" }
+okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
 okhttp-logging = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
 
 # Kotlin Serialization
+kotlin-serialization-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-core", version.ref = "kotlinSerialization" }
 kotlin-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinSerialization" }
 
 # Spark
@@ -72,6 +66,7 @@ spark-bom = { module = "com.adevinta.spark:spark-bom", version.ref = "spark" }
 spark = { module = "com.adevinta.spark:spark" }
 
 # Coil
+coil = { group = "io.coil-kt.coil3", name = "coil", version.ref = "coil" }
 coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
 coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
 leakcanary-android = { group = "com.squareup.leakcanary", name = "leakcanary-android", version.ref = "leakcanary" }
@@ -87,7 +82,6 @@ androidx-hilt-lifecycle-viewmodel-compose = { group = "androidx.hilt", name = "h
 
 # Room
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 room-paging = { group = "androidx.room", name = "room-paging", version.ref = "room" }
 
@@ -106,11 +100,19 @@ kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-cor
 javax-inject = { group = "javax.inject", name = "javax.inject", version.ref = "javaxInject" }
 
 # Testing
-turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines" }
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
 robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
-androidx-test-core = { group = "androidx.test", name = "core-ktx", version.ref = "androidxTestCore" }
+androidx-test-core = { group = "androidx.test", name = "core", version.ref = "androidxTestCore" }
+
+[bundles]
+# Compose UI with the Spark design system, for the modules with screens. The versions come from
+# the Compose and Spark BOMs, declared next to the bundle.
+compose-ui = ["androidx-ui", "androidx-ui-tooling-preview", "spark"]
+# Hilt ViewModels and lifecycle-aware collection, for the screens of the features.
+feature-ui = ["androidx-hilt-lifecycle-viewmodel-compose", "androidx-lifecycle-runtime-compose"]
+screenshot-test = ["screenshot-validation-api", "androidx-ui-tooling"]
+unit-test = ["junit", "kotlinx-coroutines-test"]
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -121,3 +123,4 @@ android-library = { id = "com.android.library", version.ref = "agp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 room = { id = "androidx.room", version.ref = "room" }
 screenshot = { id = "com.android.compose.screenshot", version.ref = "screenshot" }
+dependency-analysis = { id = "com.autonomousapps.dependency-analysis", version.ref = "dependencyAnalysis" }
