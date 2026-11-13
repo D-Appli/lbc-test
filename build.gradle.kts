@@ -16,9 +16,13 @@ plugins {
     alias(libs.plugins.hilt) apply false
     alias(libs.plugins.room) apply false
     alias(libs.plugins.screenshot) apply false
+    alias(libs.plugins.dependency.analysis)
 }
 
 subprojects {
+    // Reports the unused, misused and undeclared dependencies of each module, with buildHealth.
+    apply(plugin = "com.autonomousapps.dependency-analysis")
+
     pluginManager.withPlugin("org.jetbrains.kotlin.plugin.compose") {
         extensions.configure<ComposeCompilerGradlePluginExtension> {
             stabilityConfigurationFiles.add(

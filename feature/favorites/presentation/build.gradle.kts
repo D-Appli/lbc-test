@@ -24,10 +24,11 @@ android {
 }
 
 dependencies {
-    implementation(project(":core:domain"))
+    // The ViewModel exposes the domain models.
+    api(project(":core:domain"))
 
     // ViewModel and ImmutableList are part of the public API of FavoritesViewModel.
-    api(libs.androidx.lifecycle.viewmodel.ktx)
+    api(libs.androidx.lifecycle.viewmodel)
     api(libs.kotlinx.collections.immutable)
     // @Immutable on the UI state, which only needs the annotation and not the Compose runtime.
     implementation(libs.androidx.compose.runtime.annotation)

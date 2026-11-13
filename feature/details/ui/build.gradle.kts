@@ -31,14 +31,16 @@ dependencies {
     implementation(project(":core:analytics"))
     implementation(project(":core:domain"))
     implementation(project(":feature:details:api"))
-    implementation(project(":feature:details:presentation"))
+    // The screen takes the ViewModel. Through api, app gets the @HiltViewModel classes.
+    api(project(":feature:details:presentation"))
     implementation(project(":libs:albums:ui"))
 
     implementation(libs.androidx.activity.compose)
-    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.core)
     implementation(libs.androidx.hilt.lifecycle.viewmodel.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
-    implementation(libs.androidx.navigation3.runtime)
+    // The entry is an extension of EntryProviderScope.
+    api(libs.androidx.navigation3.runtime)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.tooling.preview)
