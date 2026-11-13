@@ -28,6 +28,8 @@ android {
 }
 
 dependencies {
+    // The navigation entry takes a callback with an Album.
+    api(projects.core.domain)
     implementation(projects.feature.favorites.api)
     // Hilt aggregates the @HiltViewModel classes from the runtime classpath of app.
     implementation(projects.feature.favorites.presentation)

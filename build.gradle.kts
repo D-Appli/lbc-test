@@ -19,6 +19,18 @@ plugins {
     alias(libs.plugins.dependency.analysis)
 }
 
+dependencyAnalysis {
+    issues {
+        all {
+            // The transitive dependencies used directly are details of Compose, Spark, Hilt and Coil;
+            // declaring them would only add versions to maintain.
+            onUsedTransitiveDependencies { severity("ignore") }
+            // The same class in two dependencies makes the build depend on the classpath order.
+            onDuplicateClassWarnings { severity("fail") }
+        }
+    }
+}
+
 subprojects {
     // Reports the unused, misused and undeclared dependencies of each module, with buildHealth.
     apply(plugin = "com.autonomousapps.dependency-analysis")
