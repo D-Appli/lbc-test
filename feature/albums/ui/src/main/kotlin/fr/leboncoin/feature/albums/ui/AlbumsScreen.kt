@@ -3,10 +3,12 @@ package fr.leboncoin.feature.albums.ui
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
@@ -81,7 +83,13 @@ private fun AlbumsContent(
         else -> R.string.albums_idle
     }
 
-    Scaffold(modifier = modifier) { contentPadding ->
+    Scaffold(
+        modifier = modifier,
+        // The default insets are only the system bars. The display cutout is added, so that in
+        // landscape the albums are not drawn behind the camera. The bottom inset is already
+        // consumed by the navigation bar of the app.
+        contentWindowInsets = WindowInsets.safeDrawing,
+    ) { contentPadding ->
         // The loader is shown while loading, on start as after a swipe to refresh.
         // A Box, as PullToRefreshBox cannot disable the swipe.
         Box(
