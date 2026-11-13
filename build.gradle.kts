@@ -22,11 +22,40 @@ plugins {
 dependencyAnalysis {
     issues {
         all {
+            // Any advice fails buildHealth, which the CI runs.
+            onAny { severity("fail") }
             // The transitive dependencies used directly are details of Compose, Spark, Hilt and Coil;
             // declaring them would only add versions to maintain.
             onUsedTransitiveDependencies { severity("ignore") }
-            // The same class in two dependencies makes the build depend on the classpath order.
+            // Not covered by onAny. The same class in two dependencies makes the build depend on
+            // the classpath order.
             onDuplicateClassWarnings { severity("fail") }
+        }
+        // The exclusions below are deliberate: the advice was reviewed and declined.
+        project(":core:analytics") {
+            // Only for @Inject on public constructors.
+            onIncorrectConfiguration { exclude(libs.javax.inject) }
+        }
+        project(":core:domain") {
+            onIncorrectConfiguration { exclude(libs.javax.inject) }
+        }
+        project(":core:data") {
+            // The standard dependency of a module with the Hilt plugin.
+            onUnusedDependencies { exclude(libs.hilt.android) }
+            // Exposed only by the public Hilt modules; the consumers do not use them.
+            onIncorrectConfiguration {
+                exclude(libs.kotlin.serialization.json, libs.retrofit.core)
+                exclude(":core:database")
+            }
+        }
+        project(":core:database") {
+            // Exposed only by AppDatabase; the consumers go through the DAO.
+            onIncorrectConfiguration { exclude(libs.room.runtime) }
+        }
+        project(":libs:albums:ui") {
+            // For Modifier: exposing it would also need the Compose BOM as api, which every
+            // consumer already declares.
+            onIncorrectConfiguration { exclude(libs.androidx.ui) }
         }
     }
 }
