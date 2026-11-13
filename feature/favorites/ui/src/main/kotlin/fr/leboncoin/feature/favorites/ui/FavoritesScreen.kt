@@ -9,8 +9,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
@@ -59,7 +61,13 @@ private fun FavoritesContent(
     onRetryClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Scaffold(modifier = modifier) { contentPadding ->
+    Scaffold(
+        modifier = modifier,
+        // The default insets are only the system bars. The display cutout is added, so that in
+        // landscape the albums are not drawn behind the camera. The bottom inset is already
+        // consumed by the navigation bar of the app.
+        contentWindowInsets = WindowInsets.safeDrawing,
+    ) { contentPadding ->
         when (uiState) {
             FavoritesUiState.Loading -> CenteredContent(contentPadding) {
                 Spinner()
